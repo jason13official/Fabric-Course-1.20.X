@@ -1,10 +1,10 @@
 package net.kaupenjoe.mccourse.painting;
 
 import net.kaupenjoe.mccourse.MCCourseMod;
-import net.minecraft.entity.decoration.painting.PaintingVariant;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.decoration.PaintingVariant;
 
 public class ModPaintings {
     public static final PaintingVariant SAW_THEM = registerPainting("saw_them", new PaintingVariant(16, 16));
@@ -13,7 +13,7 @@ public class ModPaintings {
 
 
     private static PaintingVariant registerPainting(String name, PaintingVariant paintingVariant) {
-        return Registry.register(Registries.PAINTING_VARIANT, new Identifier(MCCourseMod.MOD_ID, name), paintingVariant);
+        return Registry.register(BuiltInRegistries.PAINTING_VARIANT, new ResourceLocation(MCCourseMod.MOD_ID, name), paintingVariant);
     }
 
     public static void registerPaintings() {

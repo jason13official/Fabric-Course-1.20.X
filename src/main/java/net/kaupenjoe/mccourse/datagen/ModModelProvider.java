@@ -9,14 +9,17 @@ import net.kaupenjoe.mccourse.block.custom.ModStandingSignBlock;
 import net.kaupenjoe.mccourse.block.custom.PinkGarnetLampBlock;
 import net.kaupenjoe.mccourse.fluid.ModFluids;
 import net.kaupenjoe.mccourse.item.ModItems;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
+import net.minecraft.data.BlockFamilies;
 import net.minecraft.data.client.*;
-import net.minecraft.data.family.BlockFamilies;
-import net.minecraft.item.ArmorItem;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.data.models.BlockModelGenerators;
+import net.minecraft.data.models.ItemModelGenerators;
+import net.minecraft.data.models.blockstates.MultiVariantGenerator;
+import net.minecraft.data.models.model.ModelTemplate;
+import net.minecraft.data.models.model.ModelTemplates;
+import net.minecraft.data.models.model.TextureMapping;
+import net.minecraft.data.models.model.TexturedModel;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ArmorItem;
 import java.util.Optional;
 
 public class ModModelProvider extends FabricModelProvider {
@@ -25,16 +28,16 @@ public class ModModelProvider extends FabricModelProvider {
     }
 
     @Override
-    public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
-        BlockStateModelGenerator.BlockTexturePool pinkGarnetTexturePool = blockStateModelGenerator.registerCubeAllModelTexturePool(ModBlocks.PINK_GARNET_BLOCK);
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.RAW_PINK_GARNET_BLOCK);
+    public void generateBlockStateModels(BlockModelGenerators blockStateModelGenerator) {
+        BlockModelGenerators.BlockFamilyProvider pinkGarnetTexturePool = blockStateModelGenerator.family(ModBlocks.PINK_GARNET_BLOCK);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.RAW_PINK_GARNET_BLOCK);
 
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.PINK_GARNET_ORE);
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.DEEPSLATE_PINK_GARNET_ORE);
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.END_STONE_PINK_GARNET_ORE);
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.NETHER_PINK_GARNET_ORE);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.PINK_GARNET_ORE);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.DEEPSLATE_PINK_GARNET_ORE);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.END_STONE_PINK_GARNET_ORE);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.NETHER_PINK_GARNET_ORE);
 
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.SOUND_BLOCK);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.SOUND_BLOCK);
 
         pinkGarnetTexturePool.stairs(ModBlocks.PINK_GARNET_STAIRS);
         pinkGarnetTexturePool.slab(ModBlocks.PINK_GARNET_SLAB);
@@ -44,85 +47,85 @@ public class ModModelProvider extends FabricModelProvider {
         pinkGarnetTexturePool.fenceGate(ModBlocks.PINK_GARNET_FENCE_GATE);
         pinkGarnetTexturePool.wall(ModBlocks.PINK_GARNET_WALL);
 
-        blockStateModelGenerator.registerDoor(ModBlocks.PINK_GARNET_DOOR);
-        blockStateModelGenerator.registerTrapdoor(ModBlocks.PINK_GARNET_TRAPDOOR);
+        blockStateModelGenerator.createDoor(ModBlocks.PINK_GARNET_DOOR);
+        blockStateModelGenerator.createTrapdoor(ModBlocks.PINK_GARNET_TRAPDOOR);
 
         registerCustomLamp(blockStateModelGenerator);
 
-        blockStateModelGenerator.registerCrop(ModBlocks.CAULIFLOWER_CROP, CauliflowerCropBlock.AGE, 0, 1, 2, 3, 4, 5, 6);
-        blockStateModelGenerator.registerFlowerPotPlant(ModBlocks.PETUNIA, ModBlocks.POTTED_PETUNIA, BlockStateModelGenerator.TintType.NOT_TINTED);
+        blockStateModelGenerator.createCropBlock(ModBlocks.CAULIFLOWER_CROP, CauliflowerCropBlock.AGE, 0, 1, 2, 3, 4, 5, 6);
+        blockStateModelGenerator.createPlant(ModBlocks.PETUNIA, ModBlocks.POTTED_PETUNIA, BlockModelGenerators.TintState.NOT_TINTED);
 
-        blockStateModelGenerator.registerNorthDefaultHorizontalRotation(ModBlocks.GEM_EMPOWERING_STATION);
+        blockStateModelGenerator.createNonTemplateHorizontalBlock(ModBlocks.GEM_EMPOWERING_STATION);
 
-        blockStateModelGenerator.registerLog(ModBlocks.DRIFTWOOD_LOG).log(ModBlocks.DRIFTWOOD_LOG).wood(ModBlocks.DRIFTWOOD_WOOD);
-        blockStateModelGenerator.registerLog(ModBlocks.STRIPPED_DRIFTWOOD_LOG).log(ModBlocks.STRIPPED_DRIFTWOOD_LOG).wood(ModBlocks.STRIPPED_DRIFTWOOD_WOOD);
+        blockStateModelGenerator.woodProvider(ModBlocks.DRIFTWOOD_LOG).logWithHorizontal(ModBlocks.DRIFTWOOD_LOG).wood(ModBlocks.DRIFTWOOD_WOOD);
+        blockStateModelGenerator.woodProvider(ModBlocks.STRIPPED_DRIFTWOOD_LOG).logWithHorizontal(ModBlocks.STRIPPED_DRIFTWOOD_LOG).wood(ModBlocks.STRIPPED_DRIFTWOOD_WOOD);
 
-        BlockStateModelGenerator.BlockTexturePool tPlnaks = blockStateModelGenerator.registerCubeAllModelTexturePool(ModBlocks.DRIFTWOOD_PLANKS);
-        tPlnaks.family(BlockFamilies.register(ModBlocks.DRIFTWOOD_PLANKS).sign(ModBlocks.DRIFTWOOD_SIGN, ModBlocks.DRIFTWOOD_WALL_SIGN).build());
+        BlockModelGenerators.BlockFamilyProvider tPlnaks = blockStateModelGenerator.family(ModBlocks.DRIFTWOOD_PLANKS);
+        tPlnaks.generateFor(BlockFamilies.familyBuilder(ModBlocks.DRIFTWOOD_PLANKS).sign(ModBlocks.DRIFTWOOD_SIGN, ModBlocks.DRIFTWOOD_WALL_SIGN).getFamily());
 
-        blockStateModelGenerator.registerHangingSign(ModBlocks.STRIPPED_DRIFTWOOD_LOG, ModBlocks.DRIFTWOOD_HANGING_SIGN, ModBlocks.DRIFTWOOD_HANGING_WALL_SIGN);
+        blockStateModelGenerator.createHangingSign(ModBlocks.STRIPPED_DRIFTWOOD_LOG, ModBlocks.DRIFTWOOD_HANGING_SIGN, ModBlocks.DRIFTWOOD_HANGING_WALL_SIGN);
 
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.DRIFTWOOD_LEAVES);
-        blockStateModelGenerator.registerTintableCrossBlockState(ModBlocks.DRIFTWOOD_SAPLING, BlockStateModelGenerator.TintType.NOT_TINTED);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.DRIFTWOOD_LEAVES);
+        blockStateModelGenerator.createCrossBlock(ModBlocks.DRIFTWOOD_SAPLING, BlockModelGenerators.TintState.NOT_TINTED);
     }
 
-    private void registerCustomLamp(BlockStateModelGenerator blockStateModelGenerator) {
-        Identifier identifier = TexturedModel.CUBE_ALL.upload(ModBlocks.PINK_GARNET_LAMP_BLOCK, blockStateModelGenerator.modelCollector);
-        Identifier identifier2 = blockStateModelGenerator.createSubModel(ModBlocks.PINK_GARNET_LAMP_BLOCK, "_on", Models.CUBE_ALL, TextureMap::all);
-        blockStateModelGenerator.blockStateCollector.accept(VariantsBlockStateSupplier.create(ModBlocks.PINK_GARNET_LAMP_BLOCK)
-                .coordinate(BlockStateModelGenerator.createBooleanModelMap(PinkGarnetLampBlock.CLICKED, identifier2, identifier)));
+    private void registerCustomLamp(BlockModelGenerators blockStateModelGenerator) {
+        ResourceLocation identifier = TexturedModel.CUBE.create(ModBlocks.PINK_GARNET_LAMP_BLOCK, blockStateModelGenerator.modelOutput);
+        ResourceLocation identifier2 = blockStateModelGenerator.createSuffixedVariant(ModBlocks.PINK_GARNET_LAMP_BLOCK, "_on", ModelTemplates.CUBE_ALL, TextureMapping::cube);
+        blockStateModelGenerator.blockStateOutput.accept(MultiVariantGenerator.multiVariant(ModBlocks.PINK_GARNET_LAMP_BLOCK)
+                .with(BlockModelGenerators.createBooleanModelDispatch(PinkGarnetLampBlock.CLICKED, identifier2, identifier)));
 
-        blockStateModelGenerator.registerCrop(ModBlocks.CATTAIL_CROP, CattailCropBlock.AGE, 0, 1, 2, 3, 4, 5, 6, 7, 8);
+        blockStateModelGenerator.createCropBlock(ModBlocks.CATTAIL_CROP, CattailCropBlock.AGE, 0, 1, 2, 3, 4, 5, 6, 7, 8);
 
-        blockStateModelGenerator.registerSingleton(ModBlocks.COLORED_LEAVES, TexturedModel.LEAVES);
+        blockStateModelGenerator.createTrivialBlock(ModBlocks.COLORED_LEAVES, TexturedModel.LEAVES);
 
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.RUBY_BLOCK);
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.RUBY_BLOCK_1);
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.RUBY_BLOCK_2);
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.RUBY_BLOCK_3);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.RUBY_BLOCK);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.RUBY_BLOCK_1);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.RUBY_BLOCK_2);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.RUBY_BLOCK_3);
 
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.WAXED_RUBY_BLOCK);
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.WAXED_RUBY_BLOCK_1);
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.WAXED_RUBY_BLOCK_2);
-        blockStateModelGenerator.registerSimpleCubeAll(ModBlocks.WAXED_RUBY_BLOCK_3);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.WAXED_RUBY_BLOCK);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.WAXED_RUBY_BLOCK_1);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.WAXED_RUBY_BLOCK_2);
+        blockStateModelGenerator.createTrivialCube(ModBlocks.WAXED_RUBY_BLOCK_3);
 
-        blockStateModelGenerator.registerCooker(ModBlocks.KAUPEN_FURNACE, TexturedModel.ORIENTABLE);
+        blockStateModelGenerator.createFurnace(ModBlocks.KAUPEN_FURNACE, TexturedModel.ORIENTABLE_ONLY_TOP);
     }
 
     @Override
-    public void generateItemModels(ItemModelGenerator itemModelGenerator) {
-        itemModelGenerator.register(ModItems.PINK_GARNET, Models.GENERATED);
-        itemModelGenerator.register(ModItems.RAW_PINK_GARNET, Models.GENERATED);
+    public void generateItemModels(ItemModelGenerators itemModelGenerator) {
+        itemModelGenerator.generateFlatItem(ModItems.PINK_GARNET, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.RAW_PINK_GARNET, ModelTemplates.FLAT_ITEM);
 
-        itemModelGenerator.register(ModItems.CAULIFLOWER, Models.GENERATED);
-        itemModelGenerator.register(ModItems.PEAT_BRICK, Models.GENERATED);
-        itemModelGenerator.register(ModItems.METAL_DETECTOR, Models.GENERATED);
+        itemModelGenerator.generateFlatItem(ModItems.CAULIFLOWER, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.PEAT_BRICK, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.METAL_DETECTOR, ModelTemplates.FLAT_ITEM);
 
-        itemModelGenerator.register(ModItems.PINK_GARNET_SWORD, Models.HANDHELD);
-        itemModelGenerator.register(ModItems.PINK_GARNET_PICKAXE, Models.HANDHELD);
-        itemModelGenerator.register(ModItems.PINK_GARNET_SHOVEL, Models.HANDHELD);
-        itemModelGenerator.register(ModItems.PINK_GARNET_AXE, Models.HANDHELD);
-        itemModelGenerator.register(ModItems.PINK_GARNET_HOE, Models.HANDHELD);
-        itemModelGenerator.register(ModItems.PINK_GARNET_PAXEL, Models.HANDHELD);
+        itemModelGenerator.generateFlatItem(ModItems.PINK_GARNET_SWORD, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.PINK_GARNET_PICKAXE, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.PINK_GARNET_SHOVEL, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.PINK_GARNET_AXE, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.PINK_GARNET_HOE, ModelTemplates.FLAT_HANDHELD_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.PINK_GARNET_PAXEL, ModelTemplates.FLAT_HANDHELD_ITEM);
 
-        itemModelGenerator.registerArmor(((ArmorItem) ModItems.PINK_GARNET_HELMET));
-        itemModelGenerator.registerArmor(((ArmorItem) ModItems.PINK_GARNET_CHESTPLATE));
-        itemModelGenerator.registerArmor(((ArmorItem) ModItems.PINK_GARNET_LEGGINGS));
-        itemModelGenerator.registerArmor(((ArmorItem) ModItems.PINK_GARNET_BOOTS));
+        itemModelGenerator.generateArmorTrims(((ArmorItem) ModItems.PINK_GARNET_HELMET));
+        itemModelGenerator.generateArmorTrims(((ArmorItem) ModItems.PINK_GARNET_CHESTPLATE));
+        itemModelGenerator.generateArmorTrims(((ArmorItem) ModItems.PINK_GARNET_LEGGINGS));
+        itemModelGenerator.generateArmorTrims(((ArmorItem) ModItems.PINK_GARNET_BOOTS));
 
-        itemModelGenerator.register(ModItems.PINK_GARNET_HORSE_ARMOR, Models.GENERATED);
-        itemModelGenerator.register(ModItems.BAR_BRAWL_MUSIC_DISC, Models.GENERATED);
-        itemModelGenerator.register(ModFluids.SOAP_WATER_BUCKET, Models.GENERATED);
+        itemModelGenerator.generateFlatItem(ModItems.PINK_GARNET_HORSE_ARMOR, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.BAR_BRAWL_MUSIC_DISC, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModFluids.SOAP_WATER_BUCKET, ModelTemplates.FLAT_ITEM);
 
-        itemModelGenerator.register(ModItems.DICE, Models.GENERATED);
-        itemModelGenerator.register(ModItems.DRIFTWOOD_CHEST_BOAT, Models.GENERATED);
-        itemModelGenerator.register(ModItems.DRIFTWOOD_BOAT, Models.GENERATED);
+        itemModelGenerator.generateFlatItem(ModItems.DICE, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.DRIFTWOOD_CHEST_BOAT, ModelTemplates.FLAT_ITEM);
+        itemModelGenerator.generateFlatItem(ModItems.DRIFTWOOD_BOAT, ModelTemplates.FLAT_ITEM);
 
-        itemModelGenerator.register(ModItems.CATTAIL, Models.GENERATED);
+        itemModelGenerator.generateFlatItem(ModItems.CATTAIL, ModelTemplates.FLAT_ITEM);
 
 
-        itemModelGenerator.register(ModItems.PORCUPINE_SPAWN_EGG,
-                new Model(Optional.of(new Identifier("item/template_spawn_egg")), Optional.empty()));
+        itemModelGenerator.generateFlatItem(ModItems.PORCUPINE_SPAWN_EGG,
+                new ModelTemplate(Optional.of(new ResourceLocation("item/template_spawn_egg")), Optional.empty()));
 
         // itemModelGenerator.register(ModItems.DATA_TABLET, Models.GENERATED);
     }

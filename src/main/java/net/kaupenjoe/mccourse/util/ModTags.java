@@ -1,11 +1,11 @@
 package net.kaupenjoe.mccourse.util;
 
 import net.kaupenjoe.mccourse.MCCourseMod;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 
 public class ModTags {
     public static class Blocks {
@@ -15,22 +15,22 @@ public class ModTags {
                 createBlockTag("mineable/paxel");
 
         private static TagKey<Block> createBlockTag(String name) {
-            return TagKey.of(RegistryKeys.BLOCK, new Identifier(MCCourseMod.MOD_ID, name));
+            return TagKey.create(Registries.BLOCK, new ResourceLocation(MCCourseMod.MOD_ID, name));
         }
 
         private static TagKey<Block> createCommonBlockTag(String name) {
-            return TagKey.of(RegistryKeys.BLOCK, new Identifier("c", name));
+            return TagKey.create(Registries.BLOCK, new ResourceLocation("c", name));
         }
     }
 
     public static class Items {
 
         private static TagKey<Item> createItemTag(String name) {
-            return TagKey.of(RegistryKeys.ITEM, new Identifier(MCCourseMod.MOD_ID, name));
+            return TagKey.create(Registries.ITEM, new ResourceLocation(MCCourseMod.MOD_ID, name));
         }
 
         private static TagKey<Item> createCommonItemTag(String name) {
-            return TagKey.of(RegistryKeys.ITEM, new Identifier("c", name));
+            return TagKey.create(Registries.ITEM, new ResourceLocation("c", name));
         }
     }
 }

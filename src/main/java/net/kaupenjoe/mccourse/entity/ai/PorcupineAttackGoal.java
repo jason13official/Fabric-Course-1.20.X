@@ -1,10 +1,10 @@
 package net.kaupenjoe.mccourse.entity.ai;
 
 import net.kaupenjoe.mccourse.entity.custom.PorcupineEntity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.util.Hand;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 
 public class PorcupineAttackGoal extends MeleeAttackGoal {
     private final PorcupineEntity entity;
@@ -12,7 +12,7 @@ public class PorcupineAttackGoal extends MeleeAttackGoal {
     private int ticksUntilNextAttack = 20;
     private boolean shouldCountTillNextAttack = false;
 
-    public PorcupineAttackGoal(PathAwareEntity mob, double speed, boolean pauseWhenMobIdle) {
+    public PorcupineAttackGoal(PathfinderMob mob, double speed, boolean pauseWhenMobIdle) {
         super(mob, speed, pauseWhenMobIdle);
         entity = ((PorcupineEntity) mob);
     }
@@ -25,32 +25,32 @@ public class PorcupineAttackGoal extends MeleeAttackGoal {
     }
 
     @Override
-    protected void attack(LivingEntity pEnemy) {
+    protected void checkAndPerformAttack(LivingEntity pEnemy) {
         if (isEnemyWithinAttackDistance(pEnemy)) {
             shouldCountTillNextAttack = true;
 
             if(isTimeToStartAttackAnimation()) {
-                entity.setAttacking(true);
+                entity.setAggressive(true);
             }
 
             if(isTimeToAttack()) {
-                this.mob.getLookControl().lookAt(pEnemy.getX(), pEnemy.getEyeY(), pEnemy.getZ());
+                this.mob.getLookControl().setLookAt(pEnemy.getX(), pEnemy.getEyeY(), pEnemy.getZ());
                 performAttack(pEnemy);
             }
         } else {
             resetAttackCooldown();
             shouldCountTillNextAttack = false;
-            entity.setAttacking(false);
+            entity.setAggressive(false);
             entity.attackAnimationTimeout = 0;
         }
     }
 
     private boolean isEnemyWithinAttackDistance(LivingEntity pEnemy) {
-        return this.mob.squaredDistanceTo(pEnemy) < 2f;
+        return this.mob.distanceToSqr(pEnemy) < 2f;
     }
 
     protected void resetAttackCooldown() {
-        this.ticksUntilNextAttack = this.getTickCount(attackDelay * 2);
+        this.ticksUntilNextAttack = this.adjustedTickDelay(attackDelay * 2);
     }
 
     protected boolean isTimeToStartAttackAnimation() {
@@ -63,8 +63,8 @@ public class PorcupineAttackGoal extends MeleeAttackGoal {
 
     protected void performAttack(LivingEntity pEnemy) {
         this.resetAttackCooldown();
-        this.mob.swingHand(Hand.MAIN_HAND);
-        this.mob.tryAttack(pEnemy);
+        this.mob.swing(InteractionHand.MAIN_HAND);
+        this.mob.doHurtTarget(pEnemy);
     }
 
     @Override
@@ -77,7 +77,7 @@ public class PorcupineAttackGoal extends MeleeAttackGoal {
 
     @Override
     public void stop() {
-        entity.setAttacking(false);
+        entity.setAggressive(false);
         super.stop();
     }
 }

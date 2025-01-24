@@ -4,15 +4,14 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricAdvancementProvider;
 import net.kaupenjoe.mccourse.MCCourseMod;
 import net.kaupenjoe.mccourse.item.ModItems;
-import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementDisplay;
-import net.minecraft.advancement.AdvancementEntry;
-import net.minecraft.advancement.AdvancementFrame;
-import net.minecraft.advancement.criterion.InventoryChangedCriterion;
-import net.minecraft.item.ItemStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.advancements.Advancement;
+import net.minecraft.advancements.AdvancementHolder;
+import net.minecraft.advancements.DisplayInfo;
+import net.minecraft.advancements.FrameType;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import java.util.function.Consumer;
 
 public class ModAdvancementProvider extends FabricAdvancementProvider {
@@ -21,22 +20,22 @@ public class ModAdvancementProvider extends FabricAdvancementProvider {
     }
 
     @Override
-    public void generateAdvancement(Consumer<AdvancementEntry> consumer) {
-        AdvancementEntry rootAdvancement = Advancement.Builder.create()
-                .display(new AdvancementDisplay(new ItemStack(ModItems.PINK_GARNET),
-                        Text.literal("MC Course"), Text.literal("The Power lies in the Pink Garnet!"),
-                        new Identifier(MCCourseMod.MOD_ID, "textures/block/pink_garnet_ore.png"), AdvancementFrame.TASK,
+    public void generateAdvancement(Consumer<AdvancementHolder> consumer) {
+        AdvancementHolder rootAdvancement = Advancement.Builder.advancement()
+                .display(new DisplayInfo(new ItemStack(ModItems.PINK_GARNET),
+                        Component.literal("MC Course"), Component.literal("The Power lies in the Pink Garnet!"),
+                        new ResourceLocation(MCCourseMod.MOD_ID, "textures/block/pink_garnet_ore.png"), FrameType.TASK,
                         true, true, false))
-                .criterion("has_pink_garnet", InventoryChangedCriterion.Conditions.items(ModItems.PINK_GARNET))
-                .build(consumer, MCCourseMod.MOD_ID + ":mccourse");
+                .addCriterion("has_pink_garnet", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.PINK_GARNET))
+                .save(consumer, MCCourseMod.MOD_ID + ":mccourse");
 
-        AdvancementEntry metalDetector = Advancement.Builder.create()
-                .display(new AdvancementDisplay(new ItemStack(ModItems.METAL_DETECTOR),
-                        Text.literal("Metal Detector"), Text.literal("Batteries not included! (Actually doesn't need batteries)"),
-                        new Identifier(MCCourseMod.MOD_ID, "block/pink_garnet_ore"), AdvancementFrame.TASK,
+        AdvancementHolder metalDetector = Advancement.Builder.advancement()
+                .display(new DisplayInfo(new ItemStack(ModItems.METAL_DETECTOR),
+                        Component.literal("Metal Detector"), Component.literal("Batteries not included! (Actually doesn't need batteries)"),
+                        new ResourceLocation(MCCourseMod.MOD_ID, "block/pink_garnet_ore"), FrameType.TASK,
                         true, true, false))
-                .criterion("has_used_metal_detector", InventoryChangedCriterion.Conditions.items(ModItems.METAL_DETECTOR))
+                .addCriterion("has_used_metal_detector", InventoryChangeTrigger.TriggerInstance.hasItems(ModItems.METAL_DETECTOR))
                 .parent(rootAdvancement)
-                .build(consumer, MCCourseMod.MOD_ID + ":metal_detector");
+                .save(consumer, MCCourseMod.MOD_ID + ":metal_detector");
     }
 }

@@ -1,42 +1,39 @@
 package net.kaupenjoe.mccourse.entity.client;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.kaupenjoe.mccourse.MCCourseMod;
 import net.kaupenjoe.mccourse.entity.custom.PorcupineEntity;
 import net.kaupenjoe.mccourse.entity.layer.ModModelLayers;
 import net.kaupenjoe.mccourse.entity.variant.PorcupineVariant;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.LivingEntityRenderer;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
-
+import net.minecraft.Util;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.resources.ResourceLocation;
 import java.util.Map;
 
-public class PorcupineRenderer extends MobEntityRenderer<PorcupineEntity, PorcupineModel<PorcupineEntity>> {
-    private static final Map<PorcupineVariant, Identifier> LOCATION_BY_VARIANT =
+public class PorcupineRenderer extends MobRenderer<PorcupineEntity, PorcupineModel<PorcupineEntity>> {
+    private static final Map<PorcupineVariant, ResourceLocation> LOCATION_BY_VARIANT =
             Util.make(Maps.newEnumMap(PorcupineVariant.class), map -> {
                 map.put(PorcupineVariant.DEFAULT,
-                        new Identifier(MCCourseMod.MOD_ID, "textures/entity/porcupine.png"));
+                        new ResourceLocation(MCCourseMod.MOD_ID, "textures/entity/porcupine.png"));
                 map.put(PorcupineVariant.GREY,
-                        new Identifier(MCCourseMod.MOD_ID, "textures/entity/porcupine_grey.png"));
+                        new ResourceLocation(MCCourseMod.MOD_ID, "textures/entity/porcupine_grey.png"));
             });
 
-    public PorcupineRenderer(EntityRendererFactory.Context ctx) {
-        super(ctx, new PorcupineModel<>(ctx.getPart(ModModelLayers.PORCUPINE)), 0.6f);
+    public PorcupineRenderer(EntityRendererProvider.Context ctx) {
+        super(ctx, new PorcupineModel<>(ctx.bakeLayer(ModModelLayers.PORCUPINE)), 0.6f);
     }
 
     @Override
-    public Identifier getTexture(PorcupineEntity entity) {
+    public ResourceLocation getTexture(PorcupineEntity entity) {
         return LOCATION_BY_VARIANT.get(entity.getVariant());
     }
 
     @Override
-    public void render(PorcupineEntity livingEntity, float f, float g, MatrixStack matrixStack,
-                       VertexConsumerProvider vertexConsumerProvider, int i) {
+    public void render(PorcupineEntity livingEntity, float f, float g, PoseStack matrixStack,
+                       MultiBufferSource vertexConsumerProvider, int i) {
         if(livingEntity.isBaby()) {
             matrixStack.scale(0.5f, 0.5f, 0.5f);
         } else {

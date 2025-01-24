@@ -3,16 +3,15 @@ package net.kaupenjoe.mccourse.block.entity;
 import net.kaupenjoe.mccourse.item.ModItems;
 import net.kaupenjoe.mccourse.recipe.KaupenFurnaceRecipe;
 import net.kaupenjoe.mccourse.screen.KaupenFurnaceScreenHandler;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import java.util.Map;
 
 public class KaupenFurnaceBlockEntity extends AbstractFurnaceBlockEntity {
@@ -26,17 +25,17 @@ public class KaupenFurnaceBlockEntity extends AbstractFurnaceBlockEntity {
     }
 
     @Override
-    protected Text getContainerName() {
-        return Text.translatable("block.mccourse.kaupen_furnace");
+    protected Component getDefaultName() {
+        return Component.translatable("block.mccourse.kaupen_furnace");
     }
 
     @Override
-    protected ScreenHandler createScreenHandler(int syncId, PlayerInventory playerInventory) {
-        return new KaupenFurnaceScreenHandler(syncId, playerInventory, this, this.propertyDelegate);
+    protected AbstractContainerMenu createMenu(int syncId, Inventory playerInventory) {
+        return new KaupenFurnaceScreenHandler(syncId, playerInventory, this, this.dataAccess);
     }
 
     @Override
-    protected int getFuelTime(ItemStack fuel) {
+    protected int getBurnDuration(ItemStack fuel) {
         return BURN_DURATION_MAP.getOrDefault(fuel.getItem(), 0);
     }
 }

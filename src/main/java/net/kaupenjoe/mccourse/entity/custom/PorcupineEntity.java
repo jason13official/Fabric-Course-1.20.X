@@ -3,54 +3,65 @@ package net.kaupenjoe.mccourse.entity.custom;
 import net.kaupenjoe.mccourse.entity.ModEntities;
 import net.kaupenjoe.mccourse.entity.ai.PorcupineAttackGoal;
 import net.kaupenjoe.mccourse.entity.variant.PorcupineVariant;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.boss.BossBar;
-import net.minecraft.entity.boss.ServerBossBar;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandler;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.entity.passive.TameableEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Arm;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.EntityView;
-import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.ServerWorldAccess;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.AnimationState;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.PlayerRideable;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.entity.SpawnGroupData;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.BreedGoal;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.FollowOwnerGoal;
+import net.minecraft.world.entity.ai.goal.FollowParentGoal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.SitWhenOrderedToGoal;
+import net.minecraft.world.entity.ai.goal.TemptGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.DismountHelper;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.EntityGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-public class PorcupineEntity extends TameableEntity implements Mount {
-    private static final TrackedData<Boolean> ATTACKING =
-            DataTracker.registerData(PorcupineEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+public class PorcupineEntity extends TamableAnimal implements PlayerRideable {
+    private static final EntityDataAccessor<Boolean> ATTACKING =
+            SynchedEntityData.defineId(PorcupineEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private static final TrackedData<Integer> DATA_ID_TYPE_VARIANT =
-            DataTracker.registerData(PorcupineEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final EntityDataAccessor<Integer> DATA_ID_TYPE_VARIANT =
+            SynchedEntityData.defineId(PorcupineEntity.class, EntityDataSerializers.INT);
 
     public final AnimationState idleAnimationState = new AnimationState();
     private int idleAnimationTimeout = 0;
@@ -61,107 +72,107 @@ public class PorcupineEntity extends TameableEntity implements Mount {
     // private final ServerBossBar bossBar = new ServerBossBar(Text.literal("Our Prickly Porcupine"),
     //         BossBar.Color.GREEN, BossBar.Style.NOTCHED_6);
 
-    public PorcupineEntity(EntityType<? extends TameableEntity> entityType, World world) {
+    public PorcupineEntity(EntityType<? extends TamableAnimal> entityType, Level world) {
         super(entityType, world);
     }
 
     @Override
-    protected void initGoals() {
-        this.goalSelector.add(0, new SwimGoal(this));
+    protected void registerGoals() {
+        this.goalSelector.addGoal(0, new FloatGoal(this));
 
-        this.goalSelector.add(0, new SitGoal(this));
-        this.goalSelector.add(1, new PorcupineAttackGoal(this, 1.1D, true));
+        this.goalSelector.addGoal(0, new SitWhenOrderedToGoal(this));
+        this.goalSelector.addGoal(1, new PorcupineAttackGoal(this, 1.1D, true));
 
-        this.goalSelector.add(2, new AnimalMateGoal(this, 1.15D));
-        this.goalSelector.add(3, new TemptGoal(this, 1.25D, Ingredient.ofItems(Items.COOKED_BEEF), false));
+        this.goalSelector.addGoal(2, new BreedGoal(this, 1.15D));
+        this.goalSelector.addGoal(3, new TemptGoal(this, 1.25D, Ingredient.of(Items.COOKED_BEEF), false));
 
-        this.goalSelector.add(4, new FollowOwnerGoal(this, 1.1D, 10f, 3f, false));
-        this.goalSelector.add(4, new FollowParentGoal(this, 1.1D));
+        this.goalSelector.addGoal(4, new FollowOwnerGoal(this, 1.1D, 10f, 3f, false));
+        this.goalSelector.addGoal(4, new FollowParentGoal(this, 1.1D));
 
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0D));
-        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 4.0F));
-        this.goalSelector.add(7, new LookAroundGoal(this));
+        this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0D));
+        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 4.0F));
+        this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
 
-        this.targetSelector.add(1, new RevengeGoal(this));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
     }
 
     private void setupAnimationStates() {
         if (this.idleAnimationTimeout <= 0) {
             this.idleAnimationTimeout = this.random.nextInt(40) + 80;
-            this.idleAnimationState.start(this.age);
+            this.idleAnimationState.start(this.tickCount);
         } else {
             --this.idleAnimationTimeout;
         }
 
-        if(this.isAttacking() && attackAnimationTimeout <= 0) {
+        if(this.isAggressive() && attackAnimationTimeout <= 0) {
             attackAnimationTimeout = 40; // THIS IS LENGTH OF ANIMATION IN TICKS
-            attackAnimationState.start(this.age);
+            attackAnimationState.start(this.tickCount);
         } else {
             --this.attackAnimationTimeout;
         }
 
-        if(!this.isAttacking()) {
+        if(!this.isAggressive()) {
             attackAnimationState.stop();
         }
 
         if(isInSittingPose()) {
-            sitAnimationState.startIfNotRunning(this.age);
+            sitAnimationState.startIfStopped(this.tickCount);
         } else {
             sitAnimationState.stop();
         }
     }
 
     @Override
-    public boolean shouldRenderName() {
+    public boolean shouldShowName() {
         return false;
     }
 
-    protected void updateLimbs(float v) {
+    protected void updateWalkAnimation(float v) {
         float f;
-        if (this.getPose() == EntityPose.STANDING) {
+        if (this.getPose() == Pose.STANDING) {
             f = Math.min(v * 6.0F, 1.0F);
         } else {
             f = 0.0F;
         }
 
-        this.limbAnimator.updateLimbs(f, 0.2F);
+        this.walkAnimation.update(f, 0.2F);
     }
 
     @Override
     public void tick() {
         super.tick();
 
-        if (this.getWorld().isClient()) {
+        if (this.level().isClientSide()) {
             this.setupAnimationStates();
         }
     }
 
-    public static DefaultAttributeContainer.Builder createPorcupineAttributes() {
-        return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 12)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 1);
+    public static AttributeSupplier.Builder createPorcupineAttributes() {
+        return Mob.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 12)
+                .add(Attributes.MOVEMENT_SPEED, 0.3)
+                .add(Attributes.ATTACK_DAMAGE, 1);
     }
 
     @Nullable
     @Override
-    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+    public AgeableMob getBreedOffspring(ServerLevel world, AgeableMob entity) {
         return ModEntities.PORCUPINE.create(world);
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        this.dataTracker.startTracking(ATTACKING, false);
-        this.dataTracker.startTracking(DATA_ID_TYPE_VARIANT, 0);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(ATTACKING, false);
+        this.entityData.define(DATA_ID_TYPE_VARIANT, 0);
     }
 
-    public void setAttacking(boolean attacking) {
-        this.dataTracker.set(ATTACKING, attacking);
+    public void setAggressive(boolean attacking) {
+        this.entityData.set(ATTACKING, attacking);
     }
 
-    public boolean isAttacking() {
-        return this.dataTracker.get(ATTACKING);
+    public boolean isAggressive() {
+        return this.entityData.get(ATTACKING);
     }
 
     /* VARIANT */
@@ -171,30 +182,30 @@ public class PorcupineEntity extends TameableEntity implements Mount {
     }
 
     private int getTypeVariant() {
-        return this.dataTracker.get(DATA_ID_TYPE_VARIANT);
+        return this.entityData.get(DATA_ID_TYPE_VARIANT);
     }
 
     private void setVariant(PorcupineVariant variant) {
-        this.dataTracker.set(DATA_ID_TYPE_VARIANT, variant.getId() & 255);
+        this.entityData.set(DATA_ID_TYPE_VARIANT, variant.getId() & 255);
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
-                                 @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor world, DifficultyInstance difficulty, MobSpawnType spawnReason,
+                                 @Nullable SpawnGroupData entityData, @Nullable CompoundTag entityNbt) {
         PorcupineVariant variant = Util.getRandom(PorcupineVariant.values(), this.random);
         setVariant(variant);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+        return super.finalizeSpawn(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Override
-    public void readCustomDataFromNbt(NbtCompound nbt) {
-        super.readCustomDataFromNbt(nbt);
-        this.dataTracker.set(DATA_ID_TYPE_VARIANT, nbt.getInt("Variant"));
+    public void readAdditionalSaveData(CompoundTag nbt) {
+        super.readAdditionalSaveData(nbt);
+        this.entityData.set(DATA_ID_TYPE_VARIANT, nbt.getInt("Variant"));
     }
 
     @Override
-    public void writeCustomDataToNbt(NbtCompound nbt) {
-        super.writeCustomDataToNbt(nbt);
+    public void addAdditionalSaveData(CompoundTag nbt) {
+        super.addAdditionalSaveData(nbt);
         nbt.putInt("Variant", this.getTypeVariant());
     }
 
@@ -203,67 +214,67 @@ public class PorcupineEntity extends TameableEntity implements Mount {
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_FOX_AMBIENT;
+        return SoundEvents.FOX_AMBIENT;
     }
 
     @Nullable
     @Override
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.ENTITY_CAT_HURT;
+        return SoundEvents.CAT_HURT;
     }
 
     @Nullable
     @Override
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_DOLPHIN_DEATH;
+        return SoundEvents.DOLPHIN_DEATH;
     }
 
     /* TAMEABLE */
 
     @Override
-    public ActionResult interactMob(PlayerEntity player, Hand hand) {
-        ItemStack itemstack = player.getStackInHand(hand);
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        ItemStack itemstack = player.getItemInHand(hand);
         Item item = itemstack.getItem();
 
         Item itemForTaming = Items.APPLE;
 
-        if(item == itemForTaming && !isTamed()) {
-            if(this.getWorld().isClient()) {
-                return ActionResult.CONSUME;
+        if(item == itemForTaming && !isTame()) {
+            if(this.level().isClientSide()) {
+                return InteractionResult.CONSUME;
             } else {
-                if (!player.getAbilities().creativeMode) {
-                    itemstack.decrement(1);
+                if (!player.getAbilities().instabuild) {
+                    itemstack.shrink(1);
                 }
 
-                super.setOwner(player);
-                this.navigation.recalculatePath();
+                super.tame(player);
+                this.navigation.recomputePath();
                 this.setTarget(null);
-                this.getWorld().sendEntityStatus(this, (byte)7);
-                setSitting(true);
+                this.level().broadcastEntityEvent(this, (byte)7);
+                setOrderedToSit(true);
                 setInSittingPose(true);
 
-                return ActionResult.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         }
 
-        if(isTamed() && hand == Hand.MAIN_HAND && item != itemForTaming && !isBreedingItem(itemstack)) {
-            if(!player.isSneaking()) {
+        if(isTame() && hand == InteractionHand.MAIN_HAND && item != itemForTaming && !isFood(itemstack)) {
+            if(!player.isShiftKeyDown()) {
                 setRiding(player);
             } else {
-                boolean sitting = !isSitting();
-                setSitting(sitting);
+                boolean sitting = !isOrderedToSit();
+                setOrderedToSit(sitting);
                 setInSittingPose(sitting);
             }
 
-            return ActionResult.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
-        return super.interactMob(player, hand);
+        return super.mobInteract(player, hand);
     }
 
     @Override
-    public EntityView method_48926() {
-        return this.getWorld();
+    public EntityGetter level() {
+        return this.level();
     }
 
     /* RIDEABLE */
@@ -274,39 +285,39 @@ public class PorcupineEntity extends TameableEntity implements Mount {
         return (LivingEntity) this.getFirstPassenger();
     }
 
-    private void setRiding(PlayerEntity pPlayer) {
+    private void setRiding(Player pPlayer) {
         this.setInSittingPose(false);
 
-        pPlayer.setYaw(this.getYaw());
-        pPlayer.setPitch(this.getPitch());
+        pPlayer.setYRot(this.getYRot());
+        pPlayer.setXRot(this.getXRot());
         pPlayer.startRiding(this);
     }
 
     @Override
-    public void travel(Vec3d movementInput) {
-        if(this.hasPassengers() && getControllingPassenger() instanceof PlayerEntity) {
+    public void travel(Vec3 movementInput) {
+        if(this.isVehicle() && getControllingPassenger() instanceof Player) {
             LivingEntity livingentity = this.getControllingPassenger();
-            this.setYaw(livingentity.getYaw());
-            this.prevYaw = this.getYaw();
-            this.setPitch(livingentity.getPitch() * 0.5F);
-            this.setRotation(this.getYaw(), this.getPitch());
-            this.bodyYaw = this.getYaw();
-            this.headYaw = this.bodyYaw;
-            float f = livingentity.sidewaysSpeed * 0.5F;
-            float f1 = livingentity.forwardSpeed;
+            this.setYRot(livingentity.getYRot());
+            this.yRotO = this.getYRot();
+            this.setXRot(livingentity.getXRot() * 0.5F);
+            this.setRot(this.getYRot(), this.getXRot());
+            this.yBodyRot = this.getYRot();
+            this.yHeadRot = this.yBodyRot;
+            float f = livingentity.xxa * 0.5F;
+            float f1 = livingentity.zza;
             if (f1 <= 0.0F) {
                 f1 *= 0.25F;
             }
 
-            if (this.isLogicalSideForUpdatingMovement()) {
-                float newSpeed = (float)this.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+            if (this.isControlledByLocalInstance()) {
+                float newSpeed = (float)this.getAttributeValue(Attributes.MOVEMENT_SPEED);
 
-                if(MinecraftClient.getInstance().options.sprintKey.isPressed()) {
+                if(Minecraft.getInstance().options.keySprint.isDown()) {
                     newSpeed *= 2; // Change this to ~1.5 or so
                 }
 
-                this.setMovementSpeed(newSpeed);
-                super.travel(new Vec3d(f, movementInput.y, f1));
+                this.setSpeed(newSpeed);
+                super.travel(new Vec3(f, movementInput.y, f1));
             }
         } else {
             super.travel(movementInput);
@@ -314,53 +325,53 @@ public class PorcupineEntity extends TameableEntity implements Mount {
     }
 
     @Override
-    public Vec3d updatePassengerForDismount(LivingEntity passenger) {
-        Direction direction = this.getMovementDirection();
+    public Vec3 getDismountLocationForPassenger(LivingEntity passenger) {
+        Direction direction = this.getMotionDirection();
         if (direction.getAxis() == Direction.Axis.Y) {
-            return super.updatePassengerForDismount(passenger);
+            return super.getDismountLocationForPassenger(passenger);
         }
-        int[][] is = Dismounting.getDismountOffsets(direction);
-        BlockPos blockPos = this.getBlockPos();
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (EntityPose entityPose : passenger.getPoses()) {
-            Box box = passenger.getBoundingBox(entityPose);
+        int[][] is = DismountHelper.offsetsForDirection(direction);
+        BlockPos blockPos = this.blockPosition();
+        BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
+        for (Pose entityPose : passenger.getDismountPoses()) {
+            AABB box = passenger.getLocalBoundsForPose(entityPose);
             for (int[] js : is) {
                 mutable.set(blockPos.getX() + js[0], blockPos.getY(), blockPos.getZ() + js[1]);
-                double d = this.getWorld().getDismountHeight(mutable);
-                if (!Dismounting.canDismountInBlock(d)) continue;
-                Vec3d vec3d = Vec3d.ofCenter(mutable, d);
-                if (!Dismounting.canPlaceEntityAt(this.getWorld(), passenger, box.offset(vec3d))) continue;
+                double d = this.level().getBlockFloorHeight(mutable);
+                if (!DismountHelper.isBlockFloorValid(d)) continue;
+                Vec3 vec3d = Vec3.upFromBottomCenterOf(mutable, d);
+                if (!DismountHelper.canDismountTo(this.level(), passenger, box.move(vec3d))) continue;
                 passenger.setPose(entityPose);
                 return vec3d;
             }
         }
-        return super.updatePassengerForDismount(passenger);
+        return super.getDismountLocationForPassenger(passenger);
     }
 
     /* BREEDABLE */
 
     @Override
-    public boolean isBreedingItem(ItemStack stack) {
-        return stack.isOf(Items.COOKED_BEEF);
+    public boolean isFood(ItemStack stack) {
+        return stack.is(Items.COOKED_BEEF);
     }
 
     /* BOSS BAR */
 
     @Override
-    public void onStartedTrackingBy(ServerPlayerEntity player) {
-        super.onStartedTrackingBy(player);
+    public void startSeenByPlayer(ServerPlayer player) {
+        super.startSeenByPlayer(player);
         // this.bossBar.addPlayer(player);
     }
 
     @Override
-    public void onStoppedTrackingBy(ServerPlayerEntity player) {
-        super.onStoppedTrackingBy(player);
+    public void stopSeenByPlayer(ServerPlayer player) {
+        super.stopSeenByPlayer(player);
         // this.bossBar.removePlayer(player);
     }
 
     @Override
-    protected void mobTick() {
-        super.mobTick();
+    protected void customServerAiStep() {
+        super.customServerAiStep();
         // this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
     }
 }

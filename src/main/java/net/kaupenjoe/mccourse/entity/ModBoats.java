@@ -5,15 +5,15 @@ import com.terraformersmc.terraform.boat.api.TerraformBoatTypeRegistry;
 import net.kaupenjoe.mccourse.MCCourseMod;
 import net.kaupenjoe.mccourse.block.ModBlocks;
 import net.kaupenjoe.mccourse.item.ModItems;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 
 public class ModBoats {
-    public static final Identifier DRIFTWOOD_BOAT_ID = new Identifier(MCCourseMod.MOD_ID, "driftwood_boat");
-    public static final Identifier DRIFTWOOD_CHEST_BOAT_ID = new Identifier(MCCourseMod.MOD_ID, "driftwood_chest_boat");
+    public static final ResourceLocation DRIFTWOOD_BOAT_ID = new ResourceLocation(MCCourseMod.MOD_ID, "driftwood_boat");
+    public static final ResourceLocation DRIFTWOOD_CHEST_BOAT_ID = new ResourceLocation(MCCourseMod.MOD_ID, "driftwood_chest_boat");
 
-    public static final RegistryKey<TerraformBoatType> DRIFTWOOD_BOAT_KEY = TerraformBoatTypeRegistry.createKey(DRIFTWOOD_BOAT_ID);
+    public static final ResourceKey<TerraformBoatType> DRIFTWOOD_BOAT_KEY = TerraformBoatTypeRegistry.createKey(DRIFTWOOD_BOAT_ID);
 
     public static void registerBoats() {
         TerraformBoatType driftwoodBoat = new TerraformBoatType.Builder()

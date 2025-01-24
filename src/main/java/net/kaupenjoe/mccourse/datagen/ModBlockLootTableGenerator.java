@@ -5,12 +5,9 @@ import net.fabricmc.fabric.api.datagen.v1.provider.FabricBlockLootTableProvider;
 import net.kaupenjoe.mccourse.block.ModBlocks;
 import net.kaupenjoe.mccourse.block.custom.CauliflowerCropBlock;
 import net.kaupenjoe.mccourse.item.ModItems;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.CropBlock;
-import net.minecraft.item.Items;
-import net.minecraft.loot.condition.AnyOfLootCondition;
-import net.minecraft.loot.condition.BlockStatePropertyLootCondition;
-import net.minecraft.predicate.StatePredicate;
+import net.minecraft.advancements.critereon.StatePropertiesPredicate;
+import net.minecraft.world.level.storage.loot.predicates.AnyOfCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemBlockStatePropertyCondition;
 
 public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
     public ModBlockLootTableGenerator(FabricDataOutput dataOutput) {
@@ -19,40 +16,40 @@ public class ModBlockLootTableGenerator extends FabricBlockLootTableProvider {
 
     @Override
     public void generate() {
-        addDrop(ModBlocks.PINK_GARNET_BLOCK);
-        addDrop(ModBlocks.RAW_PINK_GARNET_BLOCK);
-        addDrop(ModBlocks.SOUND_BLOCK);
+        dropSelf(ModBlocks.PINK_GARNET_BLOCK);
+        dropSelf(ModBlocks.RAW_PINK_GARNET_BLOCK);
+        dropSelf(ModBlocks.SOUND_BLOCK);
 
-        addDrop(ModBlocks.PINK_GARNET_ORE, oreDrops(ModBlocks.PINK_GARNET_ORE, ModItems.RAW_PINK_GARNET));
-        addDrop(ModBlocks.DEEPSLATE_PINK_GARNET_ORE, oreDrops(ModBlocks.DEEPSLATE_PINK_GARNET_ORE, ModItems.RAW_PINK_GARNET));
-        addDrop(ModBlocks.END_STONE_PINK_GARNET_ORE, oreDrops(ModBlocks.END_STONE_PINK_GARNET_ORE, ModItems.RAW_PINK_GARNET));
-        addDrop(ModBlocks.NETHER_PINK_GARNET_ORE, oreDrops(ModBlocks.NETHER_PINK_GARNET_ORE, ModItems.RAW_PINK_GARNET));
+        add(ModBlocks.PINK_GARNET_ORE, createOreDrop(ModBlocks.PINK_GARNET_ORE, ModItems.RAW_PINK_GARNET));
+        add(ModBlocks.DEEPSLATE_PINK_GARNET_ORE, createOreDrop(ModBlocks.DEEPSLATE_PINK_GARNET_ORE, ModItems.RAW_PINK_GARNET));
+        add(ModBlocks.END_STONE_PINK_GARNET_ORE, createOreDrop(ModBlocks.END_STONE_PINK_GARNET_ORE, ModItems.RAW_PINK_GARNET));
+        add(ModBlocks.NETHER_PINK_GARNET_ORE, createOreDrop(ModBlocks.NETHER_PINK_GARNET_ORE, ModItems.RAW_PINK_GARNET));
 
-        addDrop(ModBlocks.PINK_GARNET_STAIRS);
-        addDrop(ModBlocks.PINK_GARNET_SLAB, slabDrops(ModBlocks.PINK_GARNET_SLAB));
-        addDrop(ModBlocks.PINK_GARNET_BUTTON);
-        addDrop(ModBlocks.PINK_GARNET_PRESSURE_PLATE);
-        addDrop(ModBlocks.PINK_GARNET_FENCE);
-        addDrop(ModBlocks.PINK_GARNET_FENCE_GATE);
-        addDrop(ModBlocks.PINK_GARNET_WALL);
-        addDrop(ModBlocks.PINK_GARNET_TRAPDOOR);
-        addDrop(ModBlocks.PINK_GARNET_DOOR, doorDrops(ModBlocks.PINK_GARNET_DOOR));
+        dropSelf(ModBlocks.PINK_GARNET_STAIRS);
+        add(ModBlocks.PINK_GARNET_SLAB, createSlabItemTable(ModBlocks.PINK_GARNET_SLAB));
+        dropSelf(ModBlocks.PINK_GARNET_BUTTON);
+        dropSelf(ModBlocks.PINK_GARNET_PRESSURE_PLATE);
+        dropSelf(ModBlocks.PINK_GARNET_FENCE);
+        dropSelf(ModBlocks.PINK_GARNET_FENCE_GATE);
+        dropSelf(ModBlocks.PINK_GARNET_WALL);
+        dropSelf(ModBlocks.PINK_GARNET_TRAPDOOR);
+        add(ModBlocks.PINK_GARNET_DOOR, createDoorTable(ModBlocks.PINK_GARNET_DOOR));
 
-        BlockStatePropertyLootCondition.Builder builder2 = BlockStatePropertyLootCondition.builder(ModBlocks.CAULIFLOWER_CROP)
-                .properties(StatePredicate.Builder.create().exactMatch(CauliflowerCropBlock.AGE, 6));
-        this.addDrop(ModBlocks.CAULIFLOWER_CROP, this.cropDrops(ModBlocks.CAULIFLOWER_CROP, ModItems.CAULIFLOWER, ModItems.CAULIFLOWER_SEEDS, builder2));
+        LootItemBlockStatePropertyCondition.Builder builder2 = LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.CAULIFLOWER_CROP)
+                .setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(CauliflowerCropBlock.AGE, 6));
+        this.add(ModBlocks.CAULIFLOWER_CROP, this.createCropDrops(ModBlocks.CAULIFLOWER_CROP, ModItems.CAULIFLOWER, ModItems.CAULIFLOWER_SEEDS, builder2));
 
         // IF YOU ONLY WANT THE ITEM TO DROP FROM THE TOP BLOCK
         // BlockStatePropertyLootCondition.Builder builder3 = BlockStatePropertyLootCondition.builder(ModBlocks.CATTAIL_CROP)
         //         .properties(StatePredicate.Builder.create().exactMatch(CauliflowerCropBlock.AGE, 8));
         // this.addDrop(ModBlocks.CATTAIL_CROP, this.cropDrops(ModBlocks.CATTAIL_CROP, ModItems.CATTAIL, ModItems.CATTAIL_SEEDS, builder3));
 
-        AnyOfLootCondition.Builder builder =
-                BlockStatePropertyLootCondition.builder(ModBlocks.CATTAIL_CROP).properties(StatePredicate.Builder.create()
-                                .exactMatch(CauliflowerCropBlock.AGE, 7))
-                        .or(BlockStatePropertyLootCondition.builder(ModBlocks.CATTAIL_CROP).properties(StatePredicate.Builder.create()
-                                .exactMatch(CauliflowerCropBlock.AGE, 8)));
-        addDrop(ModBlocks.CATTAIL_CROP, cropDrops(ModBlocks.CATTAIL_CROP, ModItems.CATTAIL, ModItems.CATTAIL_SEEDS, builder));
+        AnyOfCondition.Builder builder =
+                LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.CATTAIL_CROP).setProperties(StatePropertiesPredicate.Builder.properties()
+                                .hasProperty(CauliflowerCropBlock.AGE, 7))
+                        .or(LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.CATTAIL_CROP).setProperties(StatePropertiesPredicate.Builder.properties()
+                                .hasProperty(CauliflowerCropBlock.AGE, 8)));
+        add(ModBlocks.CATTAIL_CROP, createCropDrops(ModBlocks.CATTAIL_CROP, ModItems.CATTAIL, ModItems.CATTAIL_SEEDS, builder));
 
 
     }

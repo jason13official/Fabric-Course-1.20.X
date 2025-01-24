@@ -3,28 +3,28 @@ package net.kaupenjoe.mccourse.entity.custom;
 import net.kaupenjoe.mccourse.block.ModBlocks;
 import net.kaupenjoe.mccourse.block.custom.DiceBlock;
 import net.kaupenjoe.mccourse.entity.ModEntities;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
-import net.minecraft.item.Item;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.world.World;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.BlockHitResult;
 
-public class DiceProjectileEntity extends ThrownItemEntity {
-    public DiceProjectileEntity(EntityType<? extends ThrownItemEntity> entityType, World world) {
+public class DiceProjectileEntity extends ThrowableItemProjectile {
+    public DiceProjectileEntity(EntityType<? extends ThrowableItemProjectile> entityType, Level world) {
         super(entityType, world);
     }
 
-    public DiceProjectileEntity(LivingEntity livingEntity, World world) {
+    public DiceProjectileEntity(LivingEntity livingEntity, Level world) {
         super(ModEntities.THROWN_DICE_PROJECTILE, livingEntity, world);
     }
 
     @Override
-    public Packet<ClientPlayPacketListener> createSpawnPacket() {
-        return new EntitySpawnS2CPacket(this);
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
+        return new ClientboundAddEntityPacket(this);
     }
 
     @Override
@@ -33,13 +33,13 @@ public class DiceProjectileEntity extends ThrownItemEntity {
     }
 
     @Override
-    protected void onBlockHit(BlockHitResult blockHitResult) {
-        if(!this.getWorld().isClient()) {
-            this.getWorld().sendEntityStatus(this, (byte)3);
-            this.getWorld().setBlockState(this.getBlockPos(), ((DiceBlock) ModBlocks.DICE_BLOCK).getRandomBlockState(), 3);
+    protected void onHitBlock(BlockHitResult blockHitResult) {
+        if(!this.level().isClientSide()) {
+            this.level().broadcastEntityEvent(this, (byte)3);
+            this.level().setBlock(this.blockPosition(), ((DiceBlock) ModBlocks.DICE_BLOCK).getRandomBlockState(), 3);
         }
 
         this.discard();
-        super.onBlockHit(blockHitResult);
+        super.onHitBlock(blockHitResult);
     }
 }

@@ -1,36 +1,36 @@
 package net.kaupenjoe.mccourse.block.custom;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.BooleanProperty;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.phys.BlockHitResult;
 
 public class PinkGarnetLampBlock extends Block {
-    public static final BooleanProperty CLICKED = BooleanProperty.of("clicked");
+    public static final BooleanProperty CLICKED = BooleanProperty.create("clicked");
 
-    public PinkGarnetLampBlock(Settings settings) {
+    public PinkGarnetLampBlock(Properties settings) {
         super(settings);
-        this.setDefaultState(this.getDefaultState().with(CLICKED, false));
+        this.registerDefaultState(this.defaultBlockState().setValue(CLICKED, false));
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos,
-                              PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if(!world.isClient() && hand == Hand.MAIN_HAND) {
-            world.setBlockState(pos, state.cycle(CLICKED));
+    public InteractionResult use(BlockState state, Level world, BlockPos pos,
+                              Player player, InteractionHand hand, BlockHitResult hit) {
+        if(!world.isClientSide() && hand == InteractionHand.MAIN_HAND) {
+            world.setBlockAndUpdate(pos, state.cycle(CLICKED));
         }
 
-        return ActionResult.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(CLICKED);
     }
 }

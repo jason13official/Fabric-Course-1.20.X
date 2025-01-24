@@ -6,21 +6,20 @@ import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import net.kaupenjoe.mccourse.recipe.GemEmpoweringRecipe;
-import net.minecraft.recipe.RecipeEntry;
-
+import net.minecraft.world.item.crafting.RecipeHolder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 public class GemEmpoweringDisplay extends BasicDisplay {
-    private RecipeEntry<GemEmpoweringRecipe> recipe;
+    private RecipeHolder<GemEmpoweringRecipe> recipe;
 
     public GemEmpoweringDisplay(List<EntryIngredient> inputs, List<EntryIngredient> outputs) {
         super(inputs, outputs);
     }
 
-    public GemEmpoweringDisplay(RecipeEntry<GemEmpoweringRecipe> recipe) {
-        super(getInputList(recipe.value()), List.of(EntryIngredient.of(EntryStacks.of(recipe.value().getResult(null)))));
+    public GemEmpoweringDisplay(RecipeHolder<GemEmpoweringRecipe> recipe) {
+        super(getInputList(recipe.value()), List.of(EntryIngredient.of(EntryStacks.of(recipe.value().getResultItem(null)))));
         this.recipe = recipe;
     }
 

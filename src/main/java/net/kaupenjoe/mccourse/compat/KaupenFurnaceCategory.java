@@ -11,15 +11,14 @@ import me.shedaniel.rei.api.common.display.basic.BasicDisplay;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import net.kaupenjoe.mccourse.MCCourseMod;
 import net.kaupenjoe.mccourse.block.ModBlocks;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import java.util.LinkedList;
 import java.util.List;
 
 public class KaupenFurnaceCategory implements DisplayCategory<BasicDisplay> {
-    public static final Identifier TEXTURE =
-            new Identifier(MCCourseMod.MOD_ID, "textures/gui/kaupen_furnace.png");
+    public static final ResourceLocation TEXTURE =
+            new ResourceLocation(MCCourseMod.MOD_ID, "textures/gui/kaupen_furnace.png");
     public static final CategoryIdentifier<KaupenFurnaceDisplay> KAUPEN_FURNACE =
             CategoryIdentifier.of(MCCourseMod.MOD_ID, "kaupen_furnace");
 
@@ -29,13 +28,13 @@ public class KaupenFurnaceCategory implements DisplayCategory<BasicDisplay> {
     }
 
     @Override
-    public Text getTitle() {
-        return Text.translatable("block.mccourse.kaupen_furnace");
+    public Component getTitle() {
+        return Component.translatable("block.mccourse.kaupen_furnace");
     }
 
     @Override
     public Renderer getIcon() {
-        return EntryStacks.of(ModBlocks.KAUPEN_FURNACE.asItem().getDefaultStack());
+        return EntryStacks.of(ModBlocks.KAUPEN_FURNACE.asItem().getDefaultInstance());
     }
 
     @Override

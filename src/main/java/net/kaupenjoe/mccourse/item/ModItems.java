@@ -10,10 +10,25 @@ import net.kaupenjoe.mccourse.entity.ModBoats;
 import net.kaupenjoe.mccourse.entity.ModEntities;
 import net.kaupenjoe.mccourse.item.custom.*;
 import net.kaupenjoe.mccourse.sound.ModSounds;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.item.*;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.HangingSignItem;
+import net.minecraft.world.item.HoeItem;
+import net.minecraft.world.item.HorseArmorItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemNameBlockItem;
+import net.minecraft.world.item.PickaxeItem;
+import net.minecraft.world.item.RecordItem;
+import net.minecraft.world.item.ShieldItem;
+import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.item.SignItem;
+import net.minecraft.world.item.SpawnEggItem;
 
 public class ModItems {
     public static final Item PINK_GARNET = registerItem("pink_garnet",
@@ -22,7 +37,7 @@ public class ModItems {
             new Item(new FabricItemSettings()));
 
     public static final Item METAL_DETECTOR = registerItem("metal_detector",
-            new MetalDetectorItem(new FabricItemSettings().maxDamage(256)));
+            new MetalDetectorItem(new FabricItemSettings().durability(256)));
 
     public static final Item CAULIFLOWER = registerItem("cauliflower",
             new Item(new FabricItemSettings().food(ModFoodComponents.CAULIFLOWER)));
@@ -56,28 +71,28 @@ public class ModItems {
             new HorseArmorItem(14, "pink_garnet", new FabricItemSettings()));
 
     public static final Item DATA_TABLET = registerItem("data_tablet",
-            new DataTabletItem(new FabricItemSettings().maxCount(1)));
+            new DataTabletItem(new FabricItemSettings().stacksTo(1)));
 
     public static final Item CAULIFLOWER_SEEDS = registerItem("cauliflower_seeds",
-            new AliasedBlockItem(ModBlocks.CAULIFLOWER_CROP, new FabricItemSettings()));
+            new ItemNameBlockItem(ModBlocks.CAULIFLOWER_CROP, new FabricItemSettings()));
 
     public static final Item BAR_BRAWL_MUSIC_DISC = registerItem("bar_brawl_music_disc",
-            new MusicDiscItem(9, ModSounds.BAR_BRAWL, new FabricItemSettings().maxCount(1), 122));
+            new RecordItem(9, ModSounds.BAR_BRAWL, new FabricItemSettings().stacksTo(1), 122));
 
     public static final Item RADIATION_STAFF = registerItem("radiation_staff",
-            new RadiationStaffItem(new FabricItemSettings().maxDamage(1024)));
+            new RadiationStaffItem(new FabricItemSettings().durability(1024)));
 
     public static final Item PINK_GARNET_BOW = registerItem("pink_garnet_bow",
-            new BowItem(new FabricItemSettings().maxDamage(500)));
+            new BowItem(new FabricItemSettings().durability(500)));
 
     public static final Item PINK_GARNET_SHIELD = registerItem("pink_garnet_shield",
-            new ShieldItem(new FabricItemSettings().maxDamage(500)));
+            new ShieldItem(new FabricItemSettings().durability(500)));
 
 
     public static final Item DRIFTWOOD_SIGN = registerItem("driftwood_sign",
-            new SignItem(new FabricItemSettings().maxCount(16), ModBlocks.DRIFTWOOD_SIGN, ModBlocks.DRIFTWOOD_WALL_SIGN));
+            new SignItem(new FabricItemSettings().stacksTo(16), ModBlocks.DRIFTWOOD_SIGN, ModBlocks.DRIFTWOOD_WALL_SIGN));
     public static final Item DRIFTWOOD_HANGING_SIGN = registerItem("driftwood_hanging_sign",
-            new HangingSignItem(ModBlocks.DRIFTWOOD_HANGING_SIGN, ModBlocks.DRIFTWOOD_HANGING_WALL_SIGN, new FabricItemSettings().maxCount(16)));
+            new HangingSignItem(ModBlocks.DRIFTWOOD_HANGING_SIGN, ModBlocks.DRIFTWOOD_HANGING_WALL_SIGN, new FabricItemSettings().stacksTo(16)));
 
 
     public static final Item PORCUPINE_SPAWN_EGG = registerItem("porcupine_spawn_egg",
@@ -90,26 +105,26 @@ public class ModItems {
     public static final Item DRIFTWOOD_CHEST_BOAT = TerraformBoatItemHelper.registerBoatItem(ModBoats.DRIFTWOOD_CHEST_BOAT_ID, ModBoats.DRIFTWOOD_BOAT_KEY, true);
 
     public static final Item CATTAIL_SEEDS = registerItem("cattail_seeds",
-            new AliasedBlockItem(ModBlocks.CATTAIL_CROP, new FabricItemSettings()));
+            new ItemNameBlockItem(ModBlocks.CATTAIL_CROP, new FabricItemSettings()));
     public static final Item CATTAIL = registerItem("cattail",
             new Item(new FabricItemSettings()));
 
 
     private static Item registerItem(String name, Item item) {
-        return Registry.register(Registries.ITEM, new Identifier(MCCourseMod.MOD_ID, name), item);
+        return Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(MCCourseMod.MOD_ID, name), item);
     }
 
     private static void itemGroupIngredients(FabricItemGroupEntries entries) {
-        entries.add(PINK_GARNET);
-        entries.add(RAW_PINK_GARNET);
+        entries.accept(PINK_GARNET);
+        entries.accept(RAW_PINK_GARNET);
 
-        entries.add(ModBlocks.PINK_GARNET_BLOCK);
-        entries.add(ModBlocks.RAW_PINK_GARNET_BLOCK);
+        entries.accept(ModBlocks.PINK_GARNET_BLOCK);
+        entries.accept(ModBlocks.RAW_PINK_GARNET_BLOCK);
     }
 
     public static void registerModItems() {
         MCCourseMod.LOGGER.info("Registering Mod Items for " + MCCourseMod.MOD_ID);
 
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(ModItems::itemGroupIngredients);
+        ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.INGREDIENTS).register(ModItems::itemGroupIngredients);
     }
 }

@@ -1,11 +1,11 @@
 package net.kaupenjoe.mccourse.screen.renderer;
 
-import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.util.math.Rect2i;
-import net.minecraft.text.Text;
 import team.reborn.energy.api.EnergyStorage;
 
 import java.util.List;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.Rect2i;
+import net.minecraft.network.chat.Component;
 
 /*
  *  BluSunrize
@@ -31,11 +31,11 @@ public class EnergyInfoArea {
         this.energy = energy;
     }
 
-    public List<Text> getTooltips() {
-        return List.of(Text.literal(energy.getAmount()+" / "+energy.getCapacity()+" E"));
+    public List<Component> getTooltips() {
+        return List.of(Component.literal(energy.getAmount()+" / "+energy.getCapacity()+" E"));
     }
 
-    public void draw(DrawContext context) {
+    public void draw(GuiGraphics context) {
         final int height = area.getHeight();
         int stored = (int)(height*(energy.getAmount()/(float)energy.getCapacity()));
         context.fillGradient(

@@ -4,22 +4,21 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
 import net.kaupenjoe.mccourse.block.ModBlocks;
 import net.kaupenjoe.mccourse.util.ModTags;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
-
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import java.util.concurrent.CompletableFuture;
 
 public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
-    public ModBlockTagProvider(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture) {
+    public ModBlockTagProvider(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
         super(output, registriesFuture);
     }
 
     @Override
-    protected void configure(RegistryWrapper.WrapperLookup arg) {
-        getOrCreateTagBuilder(ModTags.Blocks.METAL_DETECTOR_DETECTABLE_BLOCKS)
+    protected void addTags(HolderLookup.Provider arg) {
+        tag(ModTags.Blocks.METAL_DETECTOR_DETECTABLE_BLOCKS)
                 .add(ModBlocks.PINK_GARNET_ORE)
                 .forceAddTag(BlockTags.GOLD_ORES)
                 .forceAddTag(BlockTags.COAL_ORES)
@@ -30,7 +29,7 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .forceAddTag(BlockTags.REDSTONE_ORES)
                 .forceAddTag(BlockTags.EMERALD_ORES);
 
-        getOrCreateTagBuilder(BlockTags.PICKAXE_MINEABLE)
+        tag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(ModBlocks.PINK_GARNET_ORE,
                         ModBlocks.PINK_GARNET_BLOCK,
                         ModBlocks.RAW_PINK_GARNET_BLOCK,
@@ -46,36 +45,36 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                         ModBlocks.PINK_GARNET_DOOR,
                         ModBlocks.PINK_GARNET_TRAPDOOR);
 
-        getOrCreateTagBuilder(BlockTags.NEEDS_DIAMOND_TOOL)
+        tag(BlockTags.NEEDS_DIAMOND_TOOL)
                 .add(ModBlocks.END_STONE_PINK_GARNET_ORE);
 
-        getOrCreateTagBuilder(BlockTags.NEEDS_IRON_TOOL)
+        tag(BlockTags.NEEDS_IRON_TOOL)
                 .add(ModBlocks.PINK_GARNET_ORE,
                         ModBlocks.PINK_GARNET_BLOCK,
                         ModBlocks.RAW_PINK_GARNET_BLOCK);
 
-        getOrCreateTagBuilder(BlockTags.WALLS)
+        tag(BlockTags.WALLS)
                 .add(ModBlocks.PINK_GARNET_WALL);
-        getOrCreateTagBuilder(BlockTags.FENCES)
+        tag(BlockTags.FENCES)
                 .add(ModBlocks.PINK_GARNET_FENCE);
-        getOrCreateTagBuilder(BlockTags.FENCE_GATES)
+        tag(BlockTags.FENCE_GATES)
                 .add(ModBlocks.PINK_GARNET_FENCE_GATE);
 
         // Tag for Tool Material Netherite
-        getOrCreateTagBuilder(TagKey.of(RegistryKeys.BLOCK, new Identifier("fabric", "needs_tool_level_4")))
+        tag(TagKey.create(Registries.BLOCK, new ResourceLocation("fabric", "needs_tool_level_4")))
                 .add(ModBlocks.NETHER_PINK_GARNET_ORE);
 
         // Tag for our custom Tool Material (Pink Garnet)
-        getOrCreateTagBuilder(TagKey.of(RegistryKeys.BLOCK, new Identifier("fabric", "needs_tool_level_5")))
+        tag(TagKey.create(Registries.BLOCK, new ResourceLocation("fabric", "needs_tool_level_5")))
                 .add(ModBlocks.DEEPSLATE_PINK_GARNET_ORE);
 
 
-        getOrCreateTagBuilder(ModTags.Blocks.PAXEL_MINEABLE)
-                .forceAddTag(BlockTags.PICKAXE_MINEABLE)
-                .forceAddTag(BlockTags.AXE_MINEABLE)
-                .forceAddTag(BlockTags.SHOVEL_MINEABLE);
+        tag(ModTags.Blocks.PAXEL_MINEABLE)
+                .forceAddTag(BlockTags.MINEABLE_WITH_PICKAXE)
+                .forceAddTag(BlockTags.MINEABLE_WITH_AXE)
+                .forceAddTag(BlockTags.MINEABLE_WITH_SHOVEL);
 
-        getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN)
+        tag(BlockTags.LOGS_THAT_BURN)
                 .add(ModBlocks.DRIFTWOOD_LOG, ModBlocks.DRIFTWOOD_WOOD, ModBlocks.STRIPPED_DRIFTWOOD_LOG, ModBlocks.STRIPPED_DRIFTWOOD_WOOD);
     }
 }

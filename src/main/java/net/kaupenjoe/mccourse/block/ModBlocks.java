@@ -8,16 +8,35 @@ import net.kaupenjoe.mccourse.sound.ModSounds;
 import net.kaupenjoe.mccourse.util.ModWoodTypes;
 import net.kaupenjoe.mccourse.world.tree.DriftwoodSaplingGenerator;
 import net.minecraft.block.*;
-import net.minecraft.block.enums.Instrument;
-import net.minecraft.data.family.BlockFamilies;
-import net.minecraft.data.family.BlockFamily;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ButtonBlock;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.DropExperienceBlock;
+import net.minecraft.world.level.block.FenceBlock;
+import net.minecraft.world.level.block.FenceGateBlock;
+import net.minecraft.world.level.block.FlowerBlock;
+import net.minecraft.world.level.block.FlowerPotBlock;
+import net.minecraft.world.level.block.LeavesBlock;
+import net.minecraft.world.level.block.PressurePlateBlock;
+import net.minecraft.world.level.block.RotatedPillarBlock;
+import net.minecraft.world.level.block.SlabBlock;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
+import net.minecraft.world.level.block.WallBlock;
+import net.minecraft.world.level.block.WeatheringCopper;
+import net.minecraft.world.level.block.WeatheringCopperFullBlock;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
+import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.block.state.properties.WoodType;
+import net.minecraft.world.level.material.MapColor;
 
 public class ModBlocks {
     public static final Block PINK_GARNET_BLOCK = registerBlock("pink_garnet_block",
@@ -26,26 +45,26 @@ public class ModBlocks {
             new Block(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)));
 
     public static final Block PINK_GARNET_ORE = registerBlock("pink_garnet_ore",
-            new ExperienceDroppingBlock(FabricBlockSettings.copyOf(Blocks.STONE), UniformIntProvider.create(3, 6)));
+            new DropExperienceBlock(FabricBlockSettings.copyOf(Blocks.STONE), UniformInt.of(3, 6)));
     public static final Block DEEPSLATE_PINK_GARNET_ORE = registerBlock("deepslate_pink_garnet_ore",
-            new ExperienceDroppingBlock(FabricBlockSettings.copyOf(Blocks.DEEPSLATE), UniformIntProvider.create(3, 6)));
+            new DropExperienceBlock(FabricBlockSettings.copyOf(Blocks.DEEPSLATE), UniformInt.of(3, 6)));
     public static final Block END_STONE_PINK_GARNET_ORE = registerBlock("end_stone_pink_garnet_ore",
-            new ExperienceDroppingBlock(FabricBlockSettings.copyOf(Blocks.END_STONE), UniformIntProvider.create(3, 6)));
+            new DropExperienceBlock(FabricBlockSettings.copyOf(Blocks.END_STONE), UniformInt.of(3, 6)));
     public static final Block NETHER_PINK_GARNET_ORE = registerBlock("nether_pink_garnet_ore",
-            new ExperienceDroppingBlock(FabricBlockSettings.copyOf(Blocks.NETHERRACK), UniformIntProvider.create(3, 6)));
+            new DropExperienceBlock(FabricBlockSettings.copyOf(Blocks.NETHERRACK), UniformInt.of(3, 6)));
 
     public static final Block SOUND_BLOCK = registerBlock("sound_block",
             new SoundBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)));
 
     public static final Block PINK_GARNET_STAIRS = registerBlock("pink_garnet_stairs",
-            new StairsBlock(ModBlocks.PINK_GARNET_BLOCK.getDefaultState(), FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)));
+            new StairBlock(ModBlocks.PINK_GARNET_BLOCK.defaultBlockState(), FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)));
     public static final Block PINK_GARNET_SLAB = registerBlock("pink_garnet_slab",
             new SlabBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)));
 
     public static final Block PINK_GARNET_BUTTON = registerBlock("pink_garnet_button",
             new ButtonBlock(FabricBlockSettings.copyOf(Blocks.STONE_BUTTON), BlockSetType.IRON, 10, true));
     public static final Block PINK_GARNET_PRESSURE_PLATE = registerBlock("pink_garnet_pressure_plate",
-            new PressurePlateBlock(PressurePlateBlock.ActivationRule.EVERYTHING, FabricBlockSettings.copyOf(Blocks.STONE_PRESSURE_PLATE), BlockSetType.IRON));
+            new PressurePlateBlock(PressurePlateBlock.Sensitivity.EVERYTHING, FabricBlockSettings.copyOf(Blocks.STONE_PRESSURE_PLATE), BlockSetType.IRON));
 
     public static final Block PINK_GARNET_FENCE = registerBlock("pink_garnet_fence",
             new FenceBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK)));
@@ -57,34 +76,34 @@ public class ModBlocks {
     public static final Block PINK_GARNET_DOOR = registerBlock("pink_garnet_door",
             new DoorBlock(FabricBlockSettings.copyOf(Blocks.IRON_DOOR), BlockSetType.IRON));
     public static final Block PINK_GARNET_TRAPDOOR = registerBlock("pink_garnet_trapdoor",
-            new TrapdoorBlock(FabricBlockSettings.copyOf(Blocks.IRON_TRAPDOOR), BlockSetType.IRON));
+            new TrapDoorBlock(FabricBlockSettings.copyOf(Blocks.IRON_TRAPDOOR), BlockSetType.IRON));
 
 
     public static final Block PINK_GARNET_LAMP_BLOCK = registerBlock("pink_garnet_lamp_block",
-            new PinkGarnetLampBlock(FabricBlockSettings.create().mapColor(MapColor.RAW_IRON_PINK).instrument(Instrument.BASEDRUM)
-                    .strength(4f).requiresTool().luminance(state -> state.get(PinkGarnetLampBlock.CLICKED) ? 15 : 0)
-                    .sounds(ModSounds.PINK_GARNET_LAMP_SOUNDS)));
+            new PinkGarnetLampBlock(FabricBlockSettings.of().mapColor(MapColor.RAW_IRON).instrument(NoteBlockInstrument.BASEDRUM)
+                    .strength(4f).requiresCorrectToolForDrops().lightLevel(state -> state.getValue(PinkGarnetLampBlock.CLICKED) ? 15 : 0)
+                    .sound(ModSounds.PINK_GARNET_LAMP_SOUNDS)));
 
 
     public static final Block CAULIFLOWER_CROP = registerBlockWithoutBlockItem("cauliflower_crop",
             new CauliflowerCropBlock(FabricBlockSettings.copyOf(Blocks.WHEAT)));
 
     public static final Block PETUNIA = registerBlock("petunia",
-            new FlowerBlock(StatusEffects.BAD_OMEN, 4, FabricBlockSettings.copyOf(Blocks.ALLIUM)));
+            new FlowerBlock(MobEffects.BAD_OMEN, 4, FabricBlockSettings.copyOf(Blocks.ALLIUM)));
     public static final Block POTTED_PETUNIA = registerBlockWithoutBlockItem("potted_petunia",
             new FlowerPotBlock(PETUNIA, FabricBlockSettings.copyOf(Blocks.POTTED_ALLIUM)));
 
     public static final Block GEM_EMPOWERING_STATION = registerBlock("gem_empowering_station",
-            new GemEmpoweringStationBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).nonOpaque()));
+            new GemEmpoweringStationBlock(FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).noOcclusion()));
 
     public static final Block DRIFTWOOD_LOG = registerBlock("driftwood_log",
-            new PillarBlock(FabricBlockSettings.copyOf(Blocks.OAK_LOG).strength(4f)));
+            new RotatedPillarBlock(FabricBlockSettings.copyOf(Blocks.OAK_LOG).strength(4f)));
     public static final Block DRIFTWOOD_WOOD = registerBlock("driftwood_wood",
-            new PillarBlock(FabricBlockSettings.copyOf(Blocks.OAK_WOOD).strength(4f)));
+            new RotatedPillarBlock(FabricBlockSettings.copyOf(Blocks.OAK_WOOD).strength(4f)));
     public static final Block STRIPPED_DRIFTWOOD_LOG = registerBlock("stripped_driftwood_log",
-            new PillarBlock(FabricBlockSettings.copyOf(Blocks.STRIPPED_OAK_LOG).strength(4f)));
+            new RotatedPillarBlock(FabricBlockSettings.copyOf(Blocks.STRIPPED_OAK_LOG).strength(4f)));
     public static final Block STRIPPED_DRIFTWOOD_WOOD = registerBlock("stripped_driftwood_wood",
-            new PillarBlock(FabricBlockSettings.copyOf(Blocks.STRIPPED_OAK_WOOD).strength(4f)));
+            new RotatedPillarBlock(FabricBlockSettings.copyOf(Blocks.STRIPPED_OAK_WOOD).strength(4f)));
 
     public static final Block DRIFTWOOD_PLANKS = registerBlock("driftwood_planks",
             new Block(FabricBlockSettings.copyOf(Blocks.OAK_PLANKS).strength(4f)));
@@ -114,13 +133,13 @@ public class ModBlocks {
             new LeavesBlock(FabricBlockSettings.copyOf(Blocks.OAK_LEAVES)));
 
     public static final Block RUBY_BLOCK = registerBlock("ruby_block",
-            new OxidizableBlock(Oxidizable.OxidationLevel.UNAFFECTED, FabricBlockSettings.copyOf(Blocks.STONE)));
+            new WeatheringCopperFullBlock(WeatheringCopper.WeatherState.UNAFFECTED, FabricBlockSettings.copyOf(Blocks.STONE)));
     public static final Block RUBY_BLOCK_1 = registerBlock("ruby_block_1",
-            new OxidizableBlock(Oxidizable.OxidationLevel.EXPOSED, FabricBlockSettings.copyOf(Blocks.STONE)));
+            new WeatheringCopperFullBlock(WeatheringCopper.WeatherState.EXPOSED, FabricBlockSettings.copyOf(Blocks.STONE)));
     public static final Block RUBY_BLOCK_2 = registerBlock("ruby_block_2",
-            new OxidizableBlock(Oxidizable.OxidationLevel.WEATHERED, FabricBlockSettings.copyOf(Blocks.STONE)));
+            new WeatheringCopperFullBlock(WeatheringCopper.WeatherState.WEATHERED, FabricBlockSettings.copyOf(Blocks.STONE)));
     public static final Block RUBY_BLOCK_3 = registerBlock("ruby_block_3",
-            new OxidizableBlock(Oxidizable.OxidationLevel.OXIDIZED, FabricBlockSettings.copyOf(Blocks.STONE)));
+            new WeatheringCopperFullBlock(WeatheringCopper.WeatherState.OXIDIZED, FabricBlockSettings.copyOf(Blocks.STONE)));
 
     public static final Block WAXED_RUBY_BLOCK = registerBlock("waxed_ruby_block",
             new Block(FabricBlockSettings.copyOf(Blocks.STONE)));
@@ -136,16 +155,16 @@ public class ModBlocks {
 
 
     private static Block registerBlockWithoutBlockItem(String name, Block block) {
-        return Registry.register(Registries.BLOCK, new Identifier(MCCourseMod.MOD_ID, name), block);
+        return Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(MCCourseMod.MOD_ID, name), block);
     }
 
     private static Block registerBlock(String name, Block block) {
         registerBlockItem(name, block);
-        return Registry.register(Registries.BLOCK, new Identifier(MCCourseMod.MOD_ID, name), block);
+        return Registry.register(BuiltInRegistries.BLOCK, new ResourceLocation(MCCourseMod.MOD_ID, name), block);
     }
 
     private static Item registerBlockItem(String name, Block block) {
-        return Registry.register(Registries.ITEM, new Identifier(MCCourseMod.MOD_ID, name),
+        return Registry.register(BuiltInRegistries.ITEM, new ResourceLocation(MCCourseMod.MOD_ID, name),
                 new BlockItem(block, new FabricItemSettings()));
     }
 

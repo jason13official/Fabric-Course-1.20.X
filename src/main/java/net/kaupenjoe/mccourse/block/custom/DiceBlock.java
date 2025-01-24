@@ -1,16 +1,16 @@
 package net.kaupenjoe.mccourse.block.custom;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.state.StateManager;
-import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import org.jetbrains.annotations.Nullable;
 
 public class DiceBlock extends Block {
-    public static DirectionProperty FACING = DirectionProperty.of("number",
+    public static DirectionProperty FACING = DirectionProperty.create("number",
             Direction.UP,
             Direction.NORTH,
             Direction.EAST,
@@ -18,22 +18,22 @@ public class DiceBlock extends Block {
             Direction.WEST,
             Direction.DOWN);
 
-    public DiceBlock(Settings settings) {
+    public DiceBlock(Properties settings) {
         super(settings);
     }
 
     @Nullable
     @Override
-    public BlockState getPlacementState(ItemPlacementContext ctx) {
+    public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         return getRandomBlockState();
     }
 
     public BlockState getRandomBlockState() {
-        return this.getDefaultState().with(FACING, getRandomDirection());
+        return this.defaultBlockState().setValue(FACING, getRandomDirection());
     }
 
     @Override
-    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING);
     }
 
@@ -47,6 +47,6 @@ public class DiceBlock extends Block {
                 Direction.DOWN
         };
 
-        return dirs[Random.create().nextBetween(0, dirs.length-1)];
+        return dirs[RandomSource.create().nextIntBetweenInclusive(0, dirs.length-1)];
     }
 }

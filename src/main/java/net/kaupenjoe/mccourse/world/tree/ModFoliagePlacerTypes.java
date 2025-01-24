@@ -3,7 +3,7 @@ package net.kaupenjoe.mccourse.world.tree;
 import net.kaupenjoe.mccourse.MCCourseMod;
 import net.kaupenjoe.mccourse.mixin.FoliagePlacerTypeInvoker;
 import net.kaupenjoe.mccourse.world.tree.custom.DriftwoodFoliagePlacer;
-import net.minecraft.world.gen.foliage.FoliagePlacerType;
+import net.minecraft.world.level.levelgen.feature.foliageplacers.FoliagePlacerType;
 
 public class ModFoliagePlacerTypes {
     public static final FoliagePlacerType<?> DRIFTWOOD_FOLIAGE_PLACER = FoliagePlacerTypeInvoker.callRegister(

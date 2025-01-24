@@ -22,13 +22,13 @@ import net.kaupenjoe.mccourse.mixin.BrewingRecipeRegistryMixin;
 import net.kaupenjoe.mccourse.potion.ModPotions;
 import net.kaupenjoe.mccourse.villager.ModVillagers;
 import net.kyrptonaught.customportalapi.api.CustomPortalBuilder;
-import net.minecraft.block.ComposterBlock;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.potion.Potions;
-import net.minecraft.util.Identifier;
-import net.minecraft.village.TradeOffer;
-import net.minecraft.village.VillagerProfession;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.npc.VillagerProfession;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.trading.MerchantOffer;
+import net.minecraft.world.level.block.ComposterBlock;
 
 public class ModRegistries {
     public static void registerModStuffs() {
@@ -60,7 +60,7 @@ public class ModRegistries {
         CustomPortalBuilder.beginPortal()
                 .frameBlock(ModBlocks.PINK_GARNET_BLOCK)
                 .lightWithItem(ModItems.CATTAIL)
-                .destDimID(new Identifier(MCCourseMod.MOD_ID, "kaupendim"))
+                .destDimID(new ResourceLocation(MCCourseMod.MOD_ID, "kaupendim"))
                 .tintColor(0xc76efa)
                 .registerPortal();
     }
@@ -76,8 +76,8 @@ public class ModRegistries {
     }
 
     private static void registerModCompostables() {
-        ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.put(ModItems.CAULIFLOWER, 0.5f);
-        ComposterBlock.ITEM_TO_LEVEL_INCREASE_CHANCE.put(ModItems.CAULIFLOWER_SEEDS, 0.25f);
+        ComposterBlock.COMPOSTABLES.put(ModItems.CAULIFLOWER, 0.5f);
+        ComposterBlock.COMPOSTABLES.put(ModItems.CAULIFLOWER_SEEDS, 0.25f);
     }
 
     private static void registerCommands() {
@@ -112,7 +112,7 @@ public class ModRegistries {
     private static void registerCustomTrades() {
         TradeOfferHelper.registerVillagerOffers(VillagerProfession.FARMER, 1,
                 factories -> {
-                    factories.add((entity, random) -> new TradeOffer(
+                    factories.add((entity, random) -> new MerchantOffer(
                        new ItemStack(Items.EMERALD, 2),
                        new ItemStack(ModItems.CAULIFLOWER, 2), 6, 2, 0.02f
                     ));
@@ -120,7 +120,7 @@ public class ModRegistries {
 
         TradeOfferHelper.registerVillagerOffers(VillagerProfession.TOOLSMITH, 3,
                 factories -> {
-                    factories.add((entity, random) -> new TradeOffer(
+                    factories.add((entity, random) -> new MerchantOffer(
                        new ItemStack(Items.EMERALD, 16),
                        new ItemStack(ModItems.PINK_GARNET_PAXEL, 1), 2, 6, 0.08f
                     ));
@@ -128,7 +128,7 @@ public class ModRegistries {
 
         TradeOfferHelper.registerVillagerOffers(ModVillagers.SOUND_MASTER, 1,
                 factories -> {
-                    factories.add((entity, random) -> new TradeOffer(
+                    factories.add((entity, random) -> new MerchantOffer(
                        new ItemStack(Items.EMERALD, 4),
                        new ItemStack(ModItems.RADIATION_STAFF, 1), 6, 19, 0.08f
                     ));
@@ -136,7 +136,7 @@ public class ModRegistries {
 
         TradeOfferHelper.registerVillagerOffers(ModVillagers.SOUND_MASTER, 2,
                 factories -> {
-                    factories.add((entity, random) -> new TradeOffer(
+                    factories.add((entity, random) -> new MerchantOffer(
                        new ItemStack(Items.EMERALD, 16),
                        new ItemStack(ModItems.METAL_DETECTOR, 1), 1, 5, 0.08f
                     ));

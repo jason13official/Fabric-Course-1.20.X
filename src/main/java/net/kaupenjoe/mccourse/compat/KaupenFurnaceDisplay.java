@@ -6,8 +6,7 @@ import me.shedaniel.rei.api.common.entry.EntryIngredient;
 import me.shedaniel.rei.api.common.util.EntryIngredients;
 import me.shedaniel.rei.api.common.util.EntryStacks;
 import net.kaupenjoe.mccourse.recipe.KaupenFurnaceRecipe;
-import net.minecraft.recipe.RecipeEntry;
-
+import net.minecraft.world.item.crafting.RecipeHolder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,8 +16,8 @@ public class KaupenFurnaceDisplay extends BasicDisplay {
         super(inputs, outputs);
     }
 
-    public KaupenFurnaceDisplay(RecipeEntry<KaupenFurnaceRecipe> recipe) {
-        super(getInputList(recipe.value()), List.of(EntryIngredient.of(EntryStacks.of(recipe.value().getResult(null)))));
+    public KaupenFurnaceDisplay(RecipeHolder<KaupenFurnaceRecipe> recipe) {
+        super(getInputList(recipe.value()), List.of(EntryIngredient.of(EntryStacks.of(recipe.value().getResultItem(null)))));
     }
 
     private static List<EntryIngredient> getInputList(KaupenFurnaceRecipe recipe) {

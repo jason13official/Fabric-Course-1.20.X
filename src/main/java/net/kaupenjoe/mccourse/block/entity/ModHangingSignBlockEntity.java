@@ -1,9 +1,9 @@
 package net.kaupenjoe.mccourse.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.block.entity.HangingSignBlockEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.HangingSignBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class ModHangingSignBlockEntity extends HangingSignBlockEntity {
     public ModHangingSignBlockEntity(BlockPos pos, BlockState state) {

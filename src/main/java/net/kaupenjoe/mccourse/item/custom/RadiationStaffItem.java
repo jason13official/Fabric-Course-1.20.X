@@ -2,37 +2,37 @@ package net.kaupenjoe.mccourse.item.custom;
 
 import net.kaupenjoe.mccourse.entity.custom.MagicProjectileEntity;
 import net.kaupenjoe.mccourse.sound.ModSounds;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.stat.Stats;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.world.World;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.stats.Stats;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class RadiationStaffItem extends Item {
-    public RadiationStaffItem(Settings settings) {
+    public RadiationStaffItem(Properties settings) {
         super(settings);
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
-        ItemStack itemstack = user.getStackInHand(hand);
-        world.playSound(null, user.getX(), user.getY(), user.getZ(), ModSounds.METAL_DETECTOR_FOUND_ORE, SoundCategory.NEUTRAL,1.5F, 1F);
-        user.getItemCooldownManager().set(this, 40);
+    public InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
+        ItemStack itemstack = user.getItemInHand(hand);
+        world.playSound(null, user.getX(), user.getY(), user.getZ(), ModSounds.METAL_DETECTOR_FOUND_ORE, SoundSource.NEUTRAL,1.5F, 1F);
+        user.getCooldowns().addCooldown(this, 40);
 
-        if (!world.isClient()) {
+        if (!world.isClientSide()) {
             MagicProjectileEntity magicProjectile = new MagicProjectileEntity(world, user);
-            magicProjectile.setVelocity(user, user.getPitch(), user.getYaw(), 0.0F, 1.5F, 0.25F);
-            world.spawnEntity(magicProjectile);
+            magicProjectile.shootFromRotation(user, user.getXRot(), user.getYRot(), 0.0F, 1.5F, 0.25F);
+            world.addFreshEntity(magicProjectile);
         }
 
-        user.incrementStat(Stats.USED.getOrCreateStat(this));
-        if (!user.getAbilities().creativeMode) {
-            itemstack.damage(1, user, p -> p.sendToolBreakStatus(hand));
+        user.awardStat(Stats.ITEM_USED.get(this));
+        if (!user.getAbilities().instabuild) {
+            itemstack.hurtAndBreak(1, user, p -> p.broadcastBreakEvent(hand));
         }
 
-        return TypedActionResult.success(itemstack, world.isClient());
+        return InteractionResultHolder.sidedSuccess(itemstack, world.isClientSide());
     }
 }

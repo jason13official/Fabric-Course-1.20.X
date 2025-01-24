@@ -3,49 +3,45 @@ package net.kaupenjoe.mccourse.entity.custom;
 import net.kaupenjoe.mccourse.entity.ModEntities;
 import net.kaupenjoe.mccourse.particle.ModParticles;
 import net.kaupenjoe.mccourse.sound.ModSounds;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.PersistentProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
-public class MagicProjectileEntity extends PersistentProjectileEntity {
-    private static final TrackedData<Boolean> HIT =
-            DataTracker.registerData(MagicProjectileEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+public class MagicProjectileEntity extends AbstractArrow {
+    private static final EntityDataAccessor<Boolean> HIT =
+            SynchedEntityData.defineId(MagicProjectileEntity.class, EntityDataSerializers.BOOLEAN);
     private int counter = 0;
 
-    public MagicProjectileEntity(EntityType<? extends PersistentProjectileEntity> entityType, World world) {
+    public MagicProjectileEntity(EntityType<? extends AbstractArrow> entityType, Level world) {
         super(entityType, world);
     }
 
-    public MagicProjectileEntity(World world, PlayerEntity player) {
+    public MagicProjectileEntity(Level world, Player player) {
         super(ModEntities.MAGIC_PROJECTILE, world);
         setOwner(player);
-        BlockPos blockpos = player.getBlockPos();
+        BlockPos blockpos = player.blockPosition();
         double d0 = (double)blockpos.getX() + 0.5D;
         double d1 = (double)blockpos.getY() + 1.75D;
         double d2 = (double)blockpos.getZ() + 0.5D;
-        this.refreshPositionAndAngles(d0, d1, d2, this.getYaw(), this.getPitch());
+        this.moveTo(d0, d1, d2, this.getYRot(), this.getXRot());
     }
 
     @Override
@@ -55,20 +51,20 @@ public class MagicProjectileEntity extends PersistentProjectileEntity {
             this.discard();
         }
 
-        if(this.dataTracker.get(HIT)) {
-            if(this.age >= counter) {
+        if(this.entityData.get(HIT)) {
+            if(this.tickCount >= counter) {
                 this.discard();
             }
         }
 
-        if (this.age >= 300) {
+        if (this.tickCount >= 300) {
             this.remove(RemovalReason.DISCARDED);
         }
 
-        Vec3d vec3 = this.getVelocity();
-        HitResult hitresult = ProjectileUtil.getCollision(this, this::canHit);
+        Vec3 vec3 = this.getDeltaMovement();
+        HitResult hitresult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
         if (hitresult.getType() != HitResult.Type.MISS)
-            this.onCollision(hitresult);
+            this.onHit(hitresult);
 
         double d0 = this.getX() + vec3.x;
         double d1 = this.getY() + vec3.y;
@@ -80,71 +76,71 @@ public class MagicProjectileEntity extends PersistentProjectileEntity {
         double d7 = vec3.z;
 
         for(int i = 1; i < 5; ++i) {
-            this.getWorld().addParticle(ModParticles.PINK_GARNET_PARTICLE, d0-(d5*2), d1-(d6*2), d2-(d7*2),
+            this.level().addParticle(ModParticles.PINK_GARNET_PARTICLE, d0-(d5*2), d1-(d6*2), d2-(d7*2),
                     -d5, -d6 - 0.1D, -d7);
         }
 
-        if (this.getWorld().getStatesInBox(this.getBoundingBox()).noneMatch(AbstractBlock.AbstractBlockState::isAir)) {
+        if (this.level().getBlockStates(this.getBoundingBox()).noneMatch(BlockBehaviour.BlockStateBase::isAir)) {
             this.discard();
-        } else if (this.isInsideWaterOrBubbleColumn()) {
+        } else if (this.isInWaterOrBubble()) {
             this.discard();
         } else {
-            this.setVelocity(vec3.multiply(0.99F));
-            this.setPos(d0, d1, d2);
+            this.setDeltaMovement(vec3.scale(0.99F));
+            this.setPosRaw(d0, d1, d2);
         }
     }
 
     @Override
-    protected void onEntityHit(EntityHitResult entityHitResult) {
+    protected void onHitEntity(EntityHitResult entityHitResult) {
         Entity hitEntity = entityHitResult.getEntity();
         Entity owner = this.getOwner();
 
-        if(hitEntity == owner && this.getWorld().isClient()) {
+        if(hitEntity == owner && this.level().isClientSide()) {
             return;
         }
 
-        this.getWorld().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.METAL_DETECTOR_FOUND_ORE, SoundCategory.NEUTRAL,
+        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.METAL_DETECTOR_FOUND_ORE, SoundSource.NEUTRAL,
                 2F, 1F);
 
         LivingEntity livingentity = owner instanceof LivingEntity ? (LivingEntity)owner : null;
         float damage = 2f;
-        boolean hurt = hitEntity.damage(this.getDamageSources().mobProjectile(this, livingentity), damage);
+        boolean hurt = hitEntity.hurt(this.damageSources().mobProjectile(this, livingentity), damage);
         if (hurt) {
             if(hitEntity instanceof LivingEntity livingHitEntity) {
-                livingHitEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 100, 1), owner);
+                livingHitEntity.addEffect(new MobEffectInstance(MobEffects.POISON, 100, 1), owner);
             }
         }
 
         for(int x = 0; x < 18; ++x) {
             for(int y = 0; y < 18; ++y) {
-                this.getWorld().addParticle(ModParticles.PINK_GARNET_PARTICLE, this.getX(), this.getY(), this.getZ(),
+                this.level().addParticle(ModParticles.PINK_GARNET_PARTICLE, this.getX(), this.getY(), this.getZ(),
                         Math.cos(x*20) * 0.15d, Math.cos(y*20) * 0.15d, Math.sin(x*20) * 0.15d);
             }
         }
     }
 
     @Override
-    protected ItemStack asItemStack() {
+    protected ItemStack getPickupItem() {
         return ItemStack.EMPTY;
     }
 
     @Override
-    protected void onBlockHit(BlockHitResult blockHitResult) {
-        BlockState blockState = this.getWorld().getBlockState(blockHitResult.getBlockPos());
-        blockState.onProjectileHit(this.getWorld(), blockState, blockHitResult, this);
+    protected void onHitBlock(BlockHitResult blockHitResult) {
+        BlockState blockState = this.level().getBlockState(blockHitResult.getBlockPos());
+        blockState.onProjectileHit(this.level(), blockState, blockHitResult, this);
 
         for(int x = 0; x < 18; ++x) {
             for(int y = 0; y < 18; ++y) {
-                this.getWorld().addParticle(ModParticles.PINK_GARNET_PARTICLE, this.getX(), this.getY(), this.getZ(),
+                this.level().addParticle(ModParticles.PINK_GARNET_PARTICLE, this.getX(), this.getY(), this.getZ(),
                         Math.cos(x*20) * 0.15d, Math.cos(y*20) * 0.15d, Math.sin(x*20) * 0.15d);
             }
         }
     }
 
     @Override
-    protected void onCollision(HitResult hitResult) {
-        super.onCollision(hitResult);
-        if(this.getWorld().isClient()) {
+    protected void onHit(HitResult hitResult) {
+        super.onHit(hitResult);
+        if(this.level().isClientSide()) {
             return;
         }
 
@@ -153,23 +149,23 @@ public class MagicProjectileEntity extends PersistentProjectileEntity {
             Entity owner = this.getOwner();
 
             if(owner != hit) {
-                this.dataTracker.set(HIT, true);
-                counter = this.age + 5;
+                this.entityData.set(HIT, true);
+                counter = this.tickCount + 5;
             }
         } else if(hitResult.getType() == HitResult.Type.BLOCK) {
-            this.dataTracker.set(HIT, true);
-            counter = this.age + 5;
+            this.entityData.set(HIT, true);
+            counter = this.tickCount + 5;
         }
     }
 
     @Override
-    public boolean hasNoGravity() {
+    public boolean isNoGravity() {
         return true;
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        this.dataTracker.startTracking(HIT, false);
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(HIT, false);
     }
 }
