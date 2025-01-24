@@ -2,7 +2,7 @@ package net.kaupenjoe.mccourse.block.custom;
 
 import net.kaupenjoe.mccourse.block.entity.GemEmpoweringStationBlockEntity;
 import net.kaupenjoe.mccourse.block.entity.ModBlockEntities;
-import net.minecraft.block.*;
+import net.minecraft.world.level.block.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.Containers;
 import net.minecraft.world.InteractionHand;

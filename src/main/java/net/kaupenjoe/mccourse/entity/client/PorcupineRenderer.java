@@ -27,7 +27,7 @@ public class PorcupineRenderer extends MobRenderer<PorcupineEntity, PorcupineMod
     }
 
     @Override
-    public ResourceLocation getTexture(PorcupineEntity entity) {
+    public ResourceLocation getTextureLocation(PorcupineEntity entity) {
         return LOCATION_BY_VARIANT.get(entity.getVariant());
     }
 

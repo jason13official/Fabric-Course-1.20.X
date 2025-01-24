@@ -15,17 +15,17 @@ public class ModItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider arg) {
-        tag(ItemTags.TRIMMABLE_ARMOR)
+        getOrCreateTagBuilder(ItemTags.TRIMMABLE_ARMOR)
                 .add(ModItems.PINK_GARNET_HELMET, ModItems.PINK_GARNET_CHESTPLATE, ModItems.PINK_GARNET_LEGGINGS, ModItems.PINK_GARNET_BOOTS);
 
-        tag(ItemTags.MUSIC_DISCS)
+        getOrCreateTagBuilder(ItemTags.MUSIC_DISCS)
                 .add(ModItems.BAR_BRAWL_MUSIC_DISC);
 
-        tag(ItemTags.LOGS_THAT_BURN)
+        getOrCreateTagBuilder(ItemTags.LOGS_THAT_BURN)
                 .add(ModBlocks.DRIFTWOOD_LOG.asItem(), ModBlocks.DRIFTWOOD_WOOD.asItem(),
                         ModBlocks.STRIPPED_DRIFTWOOD_LOG.asItem(), ModBlocks.STRIPPED_DRIFTWOOD_WOOD.asItem());
 
-        tag(ItemTags.PLANKS)
+        getOrCreateTagBuilder(ItemTags.PLANKS)
                 .add(ModBlocks.DRIFTWOOD_PLANKS.asItem());
     }
 }

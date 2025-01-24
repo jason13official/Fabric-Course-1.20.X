@@ -7,8 +7,6 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.goal.*;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -273,7 +271,7 @@ public class PorcupineEntity extends TamableAnimal implements PlayerRideable {
     }
 
     @Override
-    public EntityGetter level() {
+    public Level level() {
         return this.level();
     }
 

@@ -16,6 +16,16 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+	maven {
+		name = 'ParchmentMC'
+		url = 'https://maven.parchmentmc.org'
+	}
+	maven {
+		url "https://cursemaven.com"
+		content {
+			includeGroup "curse.maven"
+		}
+	}
 	maven { url "https://maven.shedaniel.me" }
 	maven {
 		name = 'TerraformersMC'
@@ -53,7 +63,10 @@ sourceSets {
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings loom.officialMojangMappings()
+	mappings loom.layered() {
+		officialMojangMappings()
+		parchment("org.parchmentmc.data:parchment-1.20.2:2023.12.10@zip")
+	}
 	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
@@ -68,8 +81,9 @@ dependencies {
 
 	modImplementation "com.terraformersmc.terraform-api:terraform-wood-api-v1:8.0.0"
 	include "com.terraformersmc.terraform-api:terraform-wood-api-v1:8.0.0"
+//	modImplementation 'com.github.glitchfiend:TerraBlender-fabric:1.20.2-3.0.0.170'
 
-	modImplementation 'com.github.glitchfiend:TerraBlender-fabric:1.20.2-3.0.0.170'
+	modImplementation "curse.maven:terrablender-fabric-565956:5006036"
 
 	modImplementation 'net.kyrptonaught:customportalapi:0.0.1-beta64-1.20.2'
 	include 'net.kyrptonaught:customportalapi:0.0.1-beta64-1.20.2'

@@ -12,7 +12,6 @@ import net.kaupenjoe.mccourse.item.custom.*;
 import net.kaupenjoe.mccourse.sound.ModSounds;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.item.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.AxeItem;

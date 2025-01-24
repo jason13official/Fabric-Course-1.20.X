@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(ItemRenderer.class)
 public interface ItemRendererAccessor {
-    @Accessor("models")
+    @Accessor("itemModelShaper")
     ItemModelShaper getModels();
 
-    @Invoker("renderBakedItemModel")
+    @Invoker("renderModelLists")
     void renderBakedItemModelInvoke(BakedModel model, ItemStack stack, int light, int overlay, PoseStack matrixStack, VertexConsumer vertexConsumer);
 }

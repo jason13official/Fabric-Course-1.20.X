@@ -7,7 +7,7 @@ import net.kaupenjoe.mccourse.block.custom.*;
 import net.kaupenjoe.mccourse.sound.ModSounds;
 import net.kaupenjoe.mccourse.util.ModWoodTypes;
 import net.kaupenjoe.mccourse.world.tree.DriftwoodSaplingGenerator;
-import net.minecraft.block.*;
+import net.minecraft.world.level.block.*;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;

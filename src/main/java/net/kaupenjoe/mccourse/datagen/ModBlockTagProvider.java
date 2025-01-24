@@ -18,7 +18,9 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider arg) {
-        tag(ModTags.Blocks.METAL_DETECTOR_DETECTABLE_BLOCKS)
+        // super.getOrCreateTagBuilder(ModTags.Blocks.METAL_DETECTOR_DETECTABLE_BLOCKS).add(ModBlocks.PINK_GARNET_ORE);
+
+        super.getOrCreateTagBuilder(ModTags.Blocks.METAL_DETECTOR_DETECTABLE_BLOCKS)
                 .add(ModBlocks.PINK_GARNET_ORE)
                 .forceAddTag(BlockTags.GOLD_ORES)
                 .forceAddTag(BlockTags.COAL_ORES)
@@ -29,7 +31,7 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                 .forceAddTag(BlockTags.REDSTONE_ORES)
                 .forceAddTag(BlockTags.EMERALD_ORES);
 
-        tag(BlockTags.MINEABLE_WITH_PICKAXE)
+        super.getOrCreateTagBuilder(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(ModBlocks.PINK_GARNET_ORE,
                         ModBlocks.PINK_GARNET_BLOCK,
                         ModBlocks.RAW_PINK_GARNET_BLOCK,
@@ -45,36 +47,36 @@ public class ModBlockTagProvider extends FabricTagProvider.BlockTagProvider {
                         ModBlocks.PINK_GARNET_DOOR,
                         ModBlocks.PINK_GARNET_TRAPDOOR);
 
-        tag(BlockTags.NEEDS_DIAMOND_TOOL)
+        getOrCreateTagBuilder(BlockTags.NEEDS_DIAMOND_TOOL)
                 .add(ModBlocks.END_STONE_PINK_GARNET_ORE);
 
-        tag(BlockTags.NEEDS_IRON_TOOL)
+        getOrCreateTagBuilder(BlockTags.NEEDS_IRON_TOOL)
                 .add(ModBlocks.PINK_GARNET_ORE,
                         ModBlocks.PINK_GARNET_BLOCK,
                         ModBlocks.RAW_PINK_GARNET_BLOCK);
 
-        tag(BlockTags.WALLS)
+        getOrCreateTagBuilder(BlockTags.WALLS)
                 .add(ModBlocks.PINK_GARNET_WALL);
-        tag(BlockTags.FENCES)
+        getOrCreateTagBuilder(BlockTags.FENCES)
                 .add(ModBlocks.PINK_GARNET_FENCE);
-        tag(BlockTags.FENCE_GATES)
+        getOrCreateTagBuilder(BlockTags.FENCE_GATES)
                 .add(ModBlocks.PINK_GARNET_FENCE_GATE);
 
         // Tag for Tool Material Netherite
-        tag(TagKey.create(Registries.BLOCK, new ResourceLocation("fabric", "needs_tool_level_4")))
+        getOrCreateTagBuilder(TagKey.create(Registries.BLOCK, new ResourceLocation("fabric", "needs_tool_level_4")))
                 .add(ModBlocks.NETHER_PINK_GARNET_ORE);
 
         // Tag for our custom Tool Material (Pink Garnet)
-        tag(TagKey.create(Registries.BLOCK, new ResourceLocation("fabric", "needs_tool_level_5")))
+        getOrCreateTagBuilder(TagKey.create(Registries.BLOCK, new ResourceLocation("fabric", "needs_tool_level_5")))
                 .add(ModBlocks.DEEPSLATE_PINK_GARNET_ORE);
 
 
-        tag(ModTags.Blocks.PAXEL_MINEABLE)
+        getOrCreateTagBuilder(ModTags.Blocks.PAXEL_MINEABLE)
                 .forceAddTag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .forceAddTag(BlockTags.MINEABLE_WITH_AXE)
                 .forceAddTag(BlockTags.MINEABLE_WITH_SHOVEL);
 
-        tag(BlockTags.LOGS_THAT_BURN)
+        getOrCreateTagBuilder(BlockTags.LOGS_THAT_BURN)
                 .add(ModBlocks.DRIFTWOOD_LOG, ModBlocks.DRIFTWOOD_WOOD, ModBlocks.STRIPPED_DRIFTWOOD_LOG, ModBlocks.STRIPPED_DRIFTWOOD_WOOD);
     }
 }

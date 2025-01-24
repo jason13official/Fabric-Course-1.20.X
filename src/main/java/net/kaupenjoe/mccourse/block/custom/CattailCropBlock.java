@@ -1,7 +1,7 @@
 package net.kaupenjoe.mccourse.block.custom;
 
 import net.kaupenjoe.mccourse.item.ModItems;
-import net.minecraft.block.*;
+import net.minecraft.world.level.block.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;

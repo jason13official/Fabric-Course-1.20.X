@@ -1,6 +1,5 @@
 package net.kaupenjoe.mccourse.recipe;
 
-import net.minecraft.recipe.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.AbstractCookingRecipe;
 import net.minecraft.world.item.crafting.CookingBookCategory;

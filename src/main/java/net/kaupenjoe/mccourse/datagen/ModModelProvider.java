@@ -10,7 +10,6 @@ import net.kaupenjoe.mccourse.block.custom.PinkGarnetLampBlock;
 import net.kaupenjoe.mccourse.fluid.ModFluids;
 import net.kaupenjoe.mccourse.item.ModItems;
 import net.minecraft.data.BlockFamilies;
-import net.minecraft.data.client.*;
 import net.minecraft.data.models.BlockModelGenerators;
 import net.minecraft.data.models.ItemModelGenerators;
 import net.minecraft.data.models.blockstates.MultiVariantGenerator;

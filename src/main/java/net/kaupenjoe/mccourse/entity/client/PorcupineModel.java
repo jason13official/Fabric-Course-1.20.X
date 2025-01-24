@@ -164,7 +164,7 @@ public class PorcupineModel<T extends PorcupineEntity> extends HierarchicalModel
     }
 
     @Override
-    public void setAngles(PorcupineEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(PorcupineEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         this.root().getAllParts().forEach(ModelPart::resetPose);
         this.setHeadAngles(entity, netHeadYaw, headPitch, ageInTicks);
 

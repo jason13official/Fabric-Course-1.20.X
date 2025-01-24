@@ -14,7 +14,7 @@ public class ModFluidTagProvider extends FabricTagProvider.FluidTagProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider arg) {
-        this.tag(FluidTags.WATER)
+        this.getOrCreateTagBuilder(FluidTags.WATER)
                 .add(ModFluids.FLOWING_SOAP_WATER)
                 .add(ModFluids.STILL_SOAP_WATER);
     }

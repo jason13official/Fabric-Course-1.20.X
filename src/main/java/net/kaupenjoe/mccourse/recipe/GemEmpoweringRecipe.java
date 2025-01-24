@@ -6,7 +6,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.recipe.*;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
@@ -41,7 +40,7 @@ public class GemEmpoweringRecipe implements Recipe<SimpleContainer> {
     }
 
     @Override
-    public ItemStack craft(SimpleContainer inventory, RegistryAccess registryManager) {
+    public ItemStack assemble(SimpleContainer inventory, RegistryAccess registryManager) {
         return output.copy();
     }
 
@@ -124,7 +123,7 @@ public class GemEmpoweringRecipe implements Recipe<SimpleContainer> {
         }
 
         @Override
-        public void write(FriendlyByteBuf buf, GemEmpoweringRecipe recipe) {
+        public void toNetwork(FriendlyByteBuf buf, GemEmpoweringRecipe recipe) {
             buf.writeInt(recipe.getIngredients().size());
             for (Ingredient ing : recipe.getIngredients()) {
                 ing.toNetwork(buf);

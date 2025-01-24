@@ -1,7 +1,6 @@
 package net.kaupenjoe.mccourse.enchantment;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.entity.*;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;

@@ -37,7 +37,7 @@ public class MagicProjectileRenderer extends EntityRenderer<MagicProjectileEntit
     }
 
     @Override
-    public ResourceLocation getTexture(MagicProjectileEntity entity) {
+    public ResourceLocation getTextureLocation(MagicProjectileEntity entity) {
         return TEXTURE;
     }
 }
